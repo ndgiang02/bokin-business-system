@@ -5,7 +5,7 @@ import {
   Users, UserPlus, BarChart3, Settings, LogOut, ChevronLeft,
   ChevronRight, X
 } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore.js';
+import { authStore } from '../../store/authStore.js';
 import { getMenuItems, ROLE_LABELS } from '../../utils/roleUtils.js';
 import '../../css/sidebar.css';
 
@@ -16,7 +16,7 @@ const ICONS = {
 
 export default function Sidebar({ mobileOpen, onMobileClose }) {
   const [collapsed, setCollapsed] = useState(false);
-  const { user, logout } = useAuthStore();
+  const { user, logout } = authStore();
   const navigate = useNavigate();
   const location = useLocation();
 

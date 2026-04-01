@@ -1,131 +1,86 @@
-/* header.css */
+/* header.css — Light theme */
 .header {
   height: var(--header-height);
   background: var(--bg-header);
   border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  padding: 0 24px 0 20px;
-  gap: 16px;
+  display: flex; align-items: center;
+  padding: 0 24px 0 20px; gap: 16px;
   backdrop-filter: blur(12px);
-  position: sticky;
-  top: 0;
-  z-index: 50;
+  position: sticky; top: 0; z-index: 50;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 
-.header-breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-}
-
-.breadcrumb-item {
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.breadcrumb-sep {
-  color: var(--text-muted);
-  font-size: 12px;
-}
-
+.header-breadcrumb { display: flex; align-items: center; gap: 8px; flex: 1; }
+.breadcrumb-item { font-size: 13px; color: var(--text-muted); }
+.breadcrumb-sep   { color: var(--text-muted); font-size: 12px; }
 .breadcrumb-current {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 14px; font-weight: 700;
   color: var(--text-primary);
   font-family: var(--font-display);
 }
 
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.header-actions { display: flex; align-items: center; gap: 8px; }
 
 .header-icon-btn {
-  width: 36px;
-  height: 36px;
-  background: var(--bg-card);
+  width: 36px; height: 36px;
+  background: var(--bg-input);
   border: 1px solid var(--border);
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--text-secondary);
-  transition: var(--transition);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-secondary); transition: var(--transition);
   position: relative;
 }
-
 .header-icon-btn:hover {
-  background: var(--bg-card-hover);
+  background: var(--bg-card);
   color: var(--text-primary);
-  border-color: var(--border-active);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
 }
 
 .notif-badge {
-  position: absolute;
-  top: -4px; right: -4px;
+  position: absolute; top: -4px; right: -4px;
   width: 16px; height: 16px;
-  background: var(--danger);
-  border-radius: 50%;
-  font-size: 9px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  border: 2px solid var(--bg-sidebar);
+  background: var(--danger); border-radius: 50%;
+  font-size: 9px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  color: white; border: 2px solid var(--bg-card);
   font-family: var(--font-mono);
 }
 
 .header-date {
-  font-size: 12px;
-  color: var(--text-muted);
+  font-size: 12px; color: var(--text-muted);
   font-family: var(--font-mono);
-  padding: 0 12px;
-  border-right: 1px solid var(--border);
+  padding: 0 12px; border-right: 1px solid var(--border);
 }
 
 .header-role-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  display: flex; align-items: center; gap: 6px;
   padding: 5px 12px;
   background: var(--accent-dim);
-  border: 1px solid rgba(245,158,11,0.25);
+  border: 1px solid rgba(37,99,235,0.2);
   border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--accent);
+  font-size: 11px; font-weight: 600; color: var(--accent);
   font-family: var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.role-dot {
+  width: 6px; height: 6px;
+  background: var(--accent); border-radius: 50%;
+  box-shadow: 0 0 4px var(--accent);
 }
 
 .header-hamburger {
   display: none;
-  width: 36px;
-  height: 36px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--text-secondary);
-  transition: var(--transition);
+  width: 36px; height: 36px;
+  background: var(--bg-input);
+  border: 1px solid var(--border); border-radius: 8px;
+  align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-secondary); transition: var(--transition);
   flex-shrink: 0;
 }
+.header-hamburger:hover { background: var(--bg-card); color: var(--text-primary); border-color: var(--accent); }
 
-.header-hamburger:hover {
-  background: var(--bg-card-hover);
-  color: var(--text-primary);
-  border-color: var(--border-active);
-}
 
-/* Responsive header */
 @media (max-width: 768px) {
   .header {
     padding: 0 16px;

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, LogIn, ChevronRight } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore.js';
+import { authStore } from '../../store/authStore.js';
 import { ROLE_LABELS, ROLE_COLORS } from '../../utils/roleUtils.js';
 
 //const DEMO_ACCOUNTS = MOCK_USERS.map(u => ({ email: u.email, role: u.role, name: u.name }));
@@ -10,8 +10,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
-  const { login, isLoading, error, clearError } = useAuthStore();
-
+  const { login, isLoading, error, clearError } = authStore();
 
   const navigate = useNavigate();
 

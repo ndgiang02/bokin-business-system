@@ -7,17 +7,42 @@ import MainLayout from "./components/layout/MainLayout";
 
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuthStore } from './store/authStore.js';
+import { authStore } from './store/authStore.js';
 import { hasPermission } from './utils/roleUtils.js';
+import { ToastContainer } from './shared/toast';
 import  { CreateMember } from './pages/Members/CreateMember';
 import  MemberList from './pages/Members/MemberList';
 import  { SettingsPage } from "./pages/Settings/SettingsPage";
 
 
-
+function AppLoading() {
+  return (
+    <div style={{
+      height: '100vh', display: 'flex',
+      alignItems: 'center', justifyContent: 'center',
+      background: 'var(--bg-primary)', flexDirection: 'column', gap: 16,
+    }}>
+      <div style={{
+        width: 42, height: 42, background: 'var(--accent)',
+        borderRadius: 12, display: 'flex', alignItems: 'center',
+        justifyContent: 'center', fontFamily: 'var(--font-display)',
+        fontWeight: 800, fontSize: 18, color: '#fff',
+        boxShadow: '0 4px 20px rgba(37,99,235,0.35)',
+      }}>QH</div>
+      <div style={{
+        width: 24, height: 24,
+        border: '3px solid var(--border)',
+        borderTopColor: 'var(--accent)',
+        borderRadius: '50%',
+        animation: 'spin 0.7s linear infinite',
+      }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+}
 
 function PrivateRoute({ children, permission }) {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user } = authStore();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (permission && !hasPermission(user?.role, permission)) {
     return (
@@ -37,9 +62,10 @@ function PrivateRoute({ children, permission }) {
 }
 
 export default function App() {
-  const { initAuth, isAuthenticated } = useAuthStore();
-
+  const { initAuth, isAuthenticated, isInitialized } = authStore();
+ 
   useEffect(() => { initAuth(); }, []);
+  if (!isInitialized) return <AppLoading />;
 
   return (
     <BrowserRouter>
@@ -50,14 +76,14 @@ export default function App() {
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<PrivateRoute permission="view_dashboard"><DashboardPage /></PrivateRoute>} />
           <Route path="/requests" element={<PrivateRoute permission="view_requests"><RequestList /></PrivateRoute>} />
-          <Route path="/requests/create" element={<PrivateRoute permission="create_request"><CreateRequest /></PrivateRoute>} />
           <Route path="/members" element={<PrivateRoute permission="view_members"><MemberList /></PrivateRoute>} />
-          <Route path="/members/create" element={<PrivateRoute permission="manage_members"><CreateMember /></PrivateRoute>} />
           <Route path="/settings" element={<PrivateRoute permission="view_settings"><SettingsPage /></PrivateRoute>} />
+            <Route path="/members/create" element={<PrivateRoute permission="manage_members"><CreateMember /></PrivateRoute>} />
         </Route>
 
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
+      <ToastContainer />
     </BrowserRouter>
   );
 }

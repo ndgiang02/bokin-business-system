@@ -1,62 +1,20 @@
 import sharp                from 'sharp';
 import { v4 as uuid }       from 'uuid';
 import { minioClient, BUCKET, getPublicUrl } from '../config/minio.js';
-import * as requestModel    from '../models/requestModel.js';
+import * as requestModel    from '../models/request.model.js';
+import { uploadMany, deleteMany } from './upload.service.js';
 
-// ── Helper: tạo key theo ngày ─────────────────────────────
-function generateKey(folder = 'requests') {
-  const d    = new Date();
-  const date = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
-  return `${folder}/${date}/${uuid()}.jpg`;
-}
 
-// ── Helper: compress + upload 1 file buffer lên MinIO ─────
-async function uploadToMinio(buffer, originalname) {
-  // Compress bằng sharp
-  const compressed = await sharp(buffer)
-    .resize({ width: 1200, withoutEnlargement: true })
-    .jpeg({ quality: 85 })
-    .toBuffer();
-
-  const key  = generateKey('requests');
-  const size = compressed.length;
-
-  // Upload lên MinIO
-  await minioClient.putObject(BUCKET, key, compressed, size, {
-    'Content-Type':               'image/jpeg',
-    'x-amz-meta-original-name':  originalname,
-  });
-
-  return {
-    key,
-    url:      getPublicUrl(key),
-    name:     originalname,
-    size,
-    mimeType: 'image/jpeg',
-  };
-}
-
-// ─────────────────────────────────────────────────────────
-// Tạo request mới
-//   data  — body từ request
-//   files — mảng file từ multer (req.files)
-// ─────────────────────────────────────────────────────────
 export async function createRequest(data, files = []) {
-  // 1. Upload tất cả ảnh lên MinIO song song
-  const uploadedImages = await Promise.all(
-    files.map(f => uploadToMinio(f.buffer, f.originalname))
-  );
-
-  // 2. Lưu request + đường dẫn ảnh vào MySQL
-  const request = await requestModel.createRequest(data, uploadedImages);
-
-  return request;
+  const uploadedFiles = files.length
+    ? await uploadMany(files, 'requests')
+    : [];
+ 
+  return requestModel.createRequest(data, uploadedFiles);
 }
 
-// ─────────────────────────────────────────────────────────
-// Lấy danh sách requests (có filter + phân trang)
-// ─────────────────────────────────────────────────────────
-export async function getRequests(query) {
+
+export async function getAllRequests(query) {
   const filters = {
     status:      query.status,
     priority:    query.priority,
@@ -67,36 +25,52 @@ export async function getRequests(query) {
     page:  parseInt(query.page)  || 1,
     limit: parseInt(query.limit) || 20,
   };
-  return requestModel.getRequests(filters, pagination);
+  return requestModel.getAllRequests(filters, pagination);
 }
 
-// Lấy 1 request theo id
-export async function getRequestById(id) {
-  const request = await requestModel.getRequestById(id);
-  if (!request) throw Object.assign(new Error('Request không tồn tại'), { status: 404 });
+export async function getRequestById(Id) {
+  const request = await requestModel.getRequestById(Id);
   return request;
 }
 
-// Cập nhật trạng thái
+
 export async function updateRequestStatus(id, status) {
-  await getRequestById(id);  // check tồn tại
+  await getRequestById(id);
   return requestModel.updateRequestStatus(id, status);
 }
 
-// 
-// Xóa request: xóa ảnh trên MinIO trước, rồi xóa DB
-// 
-export async function deleteRequest(id) {
-  const request = await getRequestById(id);
 
-  // Xóa từng ảnh trên MinIO song song
-  if (request.images?.length) {
-    await Promise.allSettled(
-      request.images.map(img =>
-        minioClient.removeObject(BUCKET, img.key)
-      )
-    );
+////hfdhfdfhdjfhdf
+// ── Đổi status ───────────────────────────────────────────
+export async function updateStatus(id, status) {
+  await getRequestById(id);
+  return requestModel.updateStatus(id, status);
+}
+ 
+// ── Revision ─────────────────────────────────────────────
+export async function createRevision(requestId, comment, createdById) {
+  const req = await getRequestById(requestId);
+  if (req.status !== 'done') {
+    throw Object.assign(new Error('Chỉ có thể revision khi trạng thái là done'), { status: 400 });
   }
-
+  return requestModel.createRevision(requestId, comment, createdById);
+}
+ 
+// ── Gán nhân viên SX ─────────────────────────────────────
+export async function assignUsers(requestId, userIds, assignedById) {
+  await getRequestById(requestId);
+  return requestModel.assignUsers(requestId, userIds, assignedById);
+}
+ 
+export async function removeAssignment(requestId, userId) {
+  return requestModel.removeAssignment(requestId, userId);
+}
+ 
+// ── Xóa request + files trên MinIO ───────────────────────
+export async function deleteRequest(id) {
+  const req = await getRequestById(id);
+  if (req.files?.length) {
+    await deleteMany(req.files.map(f => f.key));
+  }
   return requestModel.deleteRequest(id);
 }

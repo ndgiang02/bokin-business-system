@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Save, ArrowLeft, UserPlus } from 'lucide-react';
 import { userApi } from '../../api/userApi.js';
-import { depApi } from '../../api/departmentApi.js';
-import { roleApi } from '../../api/roleApi.js'
 import { ROLES, ROLE_LABELS } from '../../utils/roleUtils.js';
+import { departStore } from '../../store/departmentStore.js';
+import { roleStore } from '../../store/roleStore.js';
+
 
 export function CreateMember() {
   const navigate = useNavigate();
@@ -18,23 +19,26 @@ export function CreateMember() {
     password: '',
   });
 
+   const { getAlldepartments } = departStore();
+    const { getAllRoles } = roleStore();
+
   const [departments, setDepartments] = useState([]);
   const [roles, setRoles] = useState([]);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-  const fetchData = async () => {
-    const [depRes, roleRes] = await Promise.all([
-      depApi.getAlldepartments(),
-      roleApi.getAllRoles()
-    ]);
+    const fetchData = async () => {
+      const [depRes, roleRes] = await Promise.all([
+         getAlldepartments(),
+         getAllRoles()
+      ]);
 
-    setDepartments(depRes.data.data);
-    setRoles(roleRes.data.data);
-  };
+      setDepartments(depRes.data.data);
+      setRoles(roleRes.data.data);
+    };
 
-  fetchData();
-}, []);
+    fetchData();
+  }, []);
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 

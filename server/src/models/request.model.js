@@ -1,53 +1,21 @@
-import prisma from '../config/prisma.js';
+import { PrismaClient } from "@prisma/client";
 
-export async function createRequest(data, images = []) {
-  return prisma.request.create({
-    data: {
-      code:         data.code,
-      title:        data.title,
-      client:       data.client       || '—',
-      productTypes: Array.isArray(data.productTypes)
-                      ? data.productTypes.join(',')
-                      : data.productTypes,
-      videoQuality: data.videoQuality || null,
-      priority:     data.priority.toUpperCase(),
-      deadline:     new Date(data.deadline),
-      quantity:     parseInt(data.quantity) || 1,
-      notes:        data.notes        || null,
-      splitByImage: Boolean(data.splitByImage),
-      createdById:  data.createdById,
+const prisma = new PrismaClient();
 
-      images: {
-        create: images.map(img => ({
-          key:      img.key,
-          url:      img.url,
-          name:     img.name,
-          size:     img.size,
-          mimeType: img.mimeType || 'image/jpeg',
-        })),
-      },
-    },
-    include: {
-      images:    true,
-      createdBy: { select: { id: true, name: true, email: true, role: true } },
-    },
-  });
-}
-
-export async function getRequests(filters = {}, pagination = {}) {
-  const { status, priority, createdById, search } = filters;
-  const { page = 1, limit = 20 } = pagination;
+export async function getAllRequests(filters = {}, pagination = {}) {
+  const { status, priority, createdByName, search } = filters;
+  const { page = 1, limit = 30 } = pagination;
   const skip = (page - 1) * limit;
 
   const where = {
-    ...(status      && { status:      status.toUpperCase() }),
-    ...(priority    && { priority:    priority.toUpperCase() }),
-    ...(createdById && { createdById: parseInt(createdById) }),
+    ...(status      && { status:      status }),
+    ...(priority    && { priority:    priority }),
+    ...(createdByName && { created_by_name: createdByName  }),
     ...(search      && {
       OR: [
         { code:   { contains: search } },
-        { title:  { contains: search } },
-        { client: { contains: search } },
+        { created_by_name: { contains: search } },
+
       ],
     }),
   };
@@ -57,27 +25,24 @@ export async function getRequests(filters = {}, pagination = {}) {
     prisma.request.findMany({
       where,
       skip,
-      take:    limit,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        images:    true,
-        createdBy: { select: { id: true, name: true, role: true } },
+      take: limit,
+      orderBy: { created_at: 'desc' },
+      select: {
+        id: true,
+        code: true,
+        status: true,
+        priority: true,
+        deadline: true,
+        created_at: true,
+        assigned_to: true,
+        created_by_name: true,
       },
     }),
   ]);
 
-  return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+  return { items: data, total, page, limit, totalPages: Math.ceil(total / limit) };
 }
 
-export async function getRequestById(id) {
-  return prisma.request.findUnique({
-    where:   { id: parseInt(id) },
-    include: {
-      images:    true,
-      createdBy: { select: { id: true, name: true, email: true, role: true } },
-    },
-  });
-}
 
 export async function updateRequestStatus(id, status) {
   return prisma.request.update({
@@ -86,16 +51,164 @@ export async function updateRequestStatus(id, status) {
   });
 }
 
-export async function deleteRequest(id) {
-  return prisma.request.delete({
-    where:   { id: parseInt(id) },
-    include: { images: true },
-  });
-}
 
 export async function getRequestImages(requestId) {
   return prisma.requestImage.findMany({
     where:   { requestId: parseInt(requestId) },
     orderBy: { createdAt: 'asc' },
+  });
+}
+
+
+
+///moi
+
+// ── Tạo request + files + assignments
+export async function createRequest(data, files = []) {
+  return prisma.request.create({
+    data: {
+      code:         data.code,
+      title:        data.title       || `Đơn ${data.code}`,
+      product_types: Array.isArray(data.productTypes)
+                      ? data.productTypes.join(',')
+                      : data.productTypes,
+      video_quality: data.videoQuality || null,
+      priority:     data.priority,
+      deadline:     new Date(data.deadline),
+      quantity:     parseInt(data.quantity) || 1,
+      notes:        data.notes        || null,
+      split_by_image: Boolean(data.splitByImage),
+      status:       'pending',
+      created_by_id:  data.createdById,
+
+      // Files đính kèm
+      files: {
+        create: files.map(f => ({
+          file_key:      f.key,
+          url:      f.url,
+          name:     f.name,
+          size:     f.size,
+          mime_type: f.mimeType,
+          file_type: f.fileType,
+        })),
+      },
+    },
+    include: {
+      files:     true,
+    },
+  });
+}
+
+// ── Lấy danh sách 
+export async function getRequests(filters = {}, pagination = {}) {
+  const { status, priority, createdById, search } = filters;
+  const { page = 1, limit = 20 } = pagination;
+  const skip = (page - 1) * limit;
+
+  const where = {
+    ...(status      && { status }),
+    ...(priority    && { priority }),
+    ...(createdById && { createdById: parseInt(createdById) }),
+    ...(search      && {
+      OR: [
+        { code:  { contains: search } },
+        { title: { contains: search } },
+      ],
+    }),
+  };
+
+  const [total, data] = await Promise.all([
+    prisma.request.count({ where }),
+    prisma.request.findMany({
+      where, skip, take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        files:       { take: 1 },   // thumbnail
+        createdBy:   { select: { id: true, name: true, role: true } },
+        assignments: {
+          include: { user: { select: { id: true, name: true } } },
+        },
+      },
+    }),
+  ]);
+
+  return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+}
+
+// ── Lấy 1 request ────────────────────────────────────────
+export async function getRequestById(id) {
+  return prisma.request.findUnique({
+    where:   { id: parseInt(id) },
+    include: {
+      files:            true,
+      createdBy:        { select: { id: true, name: true, role: true } },
+      revisionHistories: {
+        orderBy:  { createdAt: 'asc' },
+        include:  { createdBy: { select: { id: true, name: true } } },
+      },
+      assignments: {
+        include: { user: { select: { id: true, name: true, role: true } } },
+      },
+    },
+  });
+}
+
+// ── Cập nhật status ──────────────────────────────────────
+export async function updateStatus(id, status) {
+  return prisma.request.update({
+    where: { id: parseInt(id) },
+    data:  { status },
+  });
+}
+
+// ── Revision — thêm lý do + đổi status về in_progress ───
+export async function createRevision(requestId, comment, createdById) {
+  const count = await prisma.revisionHistory.count({
+    where: { requestId: parseInt(requestId) },
+  });
+
+  return prisma.$transaction([
+    // Lưu lý do revision
+    prisma.revisionHistory.create({
+      data: {
+        requestId:   parseInt(requestId),
+        comment,
+        round:       count + 1,
+        createdById: parseInt(createdById),
+      },
+    }),
+    // Đổi status về in_progress để làm lại
+    prisma.request.update({
+      where: { id: parseInt(requestId) },
+      data:  { status: 'in_progress' },
+    }),
+  ]);
+}
+
+// ── Gán nhân viên SX ─────────────────────────────────────
+export async function assignUsers(requestId, userIds, assignedById) {
+  // Upsert từng assignment
+  const ops = userIds.map(userId =>
+    prisma.requestAssignment.upsert({
+      where:  { requestId_userId: { requestId: parseInt(requestId), userId: parseInt(userId) } },
+      create: { requestId: parseInt(requestId), userId: parseInt(userId), assignedById: parseInt(assignedById) },
+      update: { assignedById: parseInt(assignedById) },
+    })
+  );
+  return prisma.$transaction(ops);
+}
+
+// ── Xóa assignment ────────────────────────────────────────
+export async function removeAssignment(requestId, userId) {
+  return prisma.requestAssignment.delete({
+    where: { requestId_userId: { requestId: parseInt(requestId), userId: parseInt(userId) } },
+  });
+}
+
+// ── Xóa request + files MinIO ────────────────────────────
+export async function deleteRequest(id) {
+  return prisma.request.findUnique({
+    where:   { id: parseInt(id) },
+    include: { files: true },
   });
 }

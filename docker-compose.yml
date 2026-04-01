@@ -3,7 +3,7 @@ version: "3.8"
 services:
 
   mysql:
-    image: mysql:8
+    image: mysql
     container_name: workflow_mysql
     restart: always
     environment:
@@ -39,7 +39,7 @@ services:
       MINIO_PORT:       9000
       MINIO_USE_SSL:    "false"
       MINIO_ACCESS_KEY: root
-      MINIO_SECRET_KEY: root
+      MINIO_SECRET_KEY: 12345678
       MINIO_BUCKET:     business-system
       # CORS
       ALLOWED_ORIGIN:   http://localhost:3000 
@@ -59,17 +59,6 @@ services:
     depends_on:
       - minio
       - server
-    networks:
-      - workflow-network
-
-  adminer:
-    image: adminer
-    container_name: workflow_adminer
-    restart: always
-    ports:
-      - "8080:8080"
-    depends_on:
-      - mysql
     networks:
       - workflow-network
 
@@ -97,6 +86,8 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    networks:
+      - workflow-network
  
   # Tạo bucket khi khởi động lần đầu
   minio-init:
@@ -111,6 +102,9 @@ services:
         mc anonymous set public local/business-system &&
         echo 'Bucket ready!'
       "
+    networks:
+      - workflow-network
+
 
 networks:
   workflow-network:

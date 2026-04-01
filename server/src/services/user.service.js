@@ -19,3 +19,9 @@ exports.getAllUsers = async () => {
   return await userModel.getAllUsers();
 
 };
+
+exports.getUsersDepartment = async (Id) => {
+
+  return await userModel.getUsersDepartment(Id);
+
+};

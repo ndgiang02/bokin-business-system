@@ -61,3 +61,30 @@ exports.getAllUsers = async () => {
     department: user.department?.name
   }));
 };
+
+exports.getUsersDepartment = async (departmentId) => {
+  const users = await prisma.user.findMany({
+    where: {
+      ...(departmentId && { department_id: departmentId }),
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      created_at: true,
+      role: { select: { role: true } },
+      department: { select: { name: true } },
+    },
+  });
+
+  return users.map(user => ({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    created_at: user.created_at,
+    role: user.role?.role || null,
+    department: user.department?.name || null,
+  }));
+};

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserPlus, Search, Trash2, Edit, Shield, Phone, Mail, Building2, Calendar, ChevronDown } from 'lucide-react';
-import { userApi } from '../../api/userApi.js';
-import { useAuthStore } from '../../store/authStore.js';
+import { authStore } from '../../store/authStore.js';
+import { userStore } from '../../store/userStore.js';
 import { hasPermission, ROLE_LABELS, ROLE_COLORS } from '../../utils/roleUtils.js';
+import { CreateMember } from './CreateMember.jsx';
 
 export default function MemberList() {
   const [members, setMembers] = useState([]);
@@ -12,12 +13,13 @@ export default function MemberList() {
   const [roleFilter, setRoleFilter] = useState('all');
   const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'table'
   const [loading, setLoading] = useState(true);
-  const { user } = useAuthStore();
+  const { user } = authStore();
+  const { getAllUser } = userStore();
   const navigate = useNavigate();
   const canManage = hasPermission(user?.role, 'manage_members');
 
   useEffect(() => {
-    userApi.getAll().then(d => { setMembers(d); setFiltered(d); setLoading(false); });
+    getAllUser().then(d => { setMembers(d); setFiltered(d); setLoading(false); });
   }, []);
 
   useEffect(() => {
@@ -48,7 +50,10 @@ export default function MemberList() {
           <p className="page-subtitle">Quản lý tài khoản và phân quyền hệ thống • {members.length} thành viên</p>
         </div>
         {canManage && (
-          <button className="btn btn-primary" onClick={() => navigate('/members/create')}>
+          <button
+            className="btn btn-primary"
+            onClick={() => navigate('/members/create')}
+          >
             <UserPlus size={16} /> Thêm Thành Viên
           </button>
         )}
@@ -281,7 +286,7 @@ export default function MemberList() {
                     <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>{member.department}</td>
                     <td style={{ padding: '12px 16px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 12 }}>{member.email}</td>
                     <td style={{ padding: '12px 16px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 12 }}>{member.phone}</td>
-                    <td style={{ padding: '12px 16px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 12 }}>{member.joinDate}</td>
+                    <td style={{ padding: '12px 16px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 12 }}>{new Date(member.created_at).toLocaleDateString('vi-VN')}</td>
                     {canManage && (
                       <td style={{ padding: '12px 16px' }}>
                         <div style={{ display: 'flex', gap: 6 }}>

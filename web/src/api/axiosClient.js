@@ -3,9 +3,6 @@ import axios from "axios";
 const axiosClient = axios.create({
   baseURL: "http://localhost:5002/api", // API server
   timeout: 10000,
-  headers: {
-    "Content-Type": "application/json"
-  }
 });
 
 // request interceptor
@@ -29,8 +26,8 @@ axiosClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem("auth_user");
-      window.location.href = "/login";
+      //localStorage.removeItem("auth_user");
+     // window.location.replace("/login");
     }
 
     return Promise.reject(error);

@@ -4,15 +4,6 @@ import {
   LineChart, Line, CartesianGrid, Legend,
 } from 'recharts';
 
-const monthData = [
-  { month: 'T10', doanhthu: 3200, chiphiSX: 1800, loinhuan: 1400 },
-  { month: 'T11', doanhthu: 4100, chiphiSX: 2100, loinhuan: 2000 },
-  { month: 'T12', doanhthu: 5800, chiphiSX: 2600, loinhuan: 3200 },
-  { month: 'T1',  doanhthu: 3900, chiphiSX: 1900, loinhuan: 2000 },
-  { month: 'T2',  doanhthu: 4700, chiphiSX: 2300, loinhuan: 2400 },
-  { month: 'T3',  doanhthu: 5200, chiphiSX: 2500, loinhuan: 2700 },
-];
-
 const TooltipCustom = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   return (
@@ -27,49 +18,18 @@ const TooltipCustom = ({ active, payload, label }) => {
   );
 };
 
-// =========================================
-// Settings page
-// =========================================
 export function SettingsPage() {
   return (
-    <div className="animate-fade-in" style={{ maxWidth: 720 }}>
+    <div className="animate-fade-in">
       <div style={{ marginBottom: 28 }}>
         <h1 className="page-title">Cài Đặt Hệ Thống</h1>
         <p className="page-subtitle">Cấu hình và tùy chỉnh hệ thống quản lý</p>
       </div>
 
-      {/* Thông tin công ty */}
-      <div className="card" style={{ marginBottom: 16 }}>
-        <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15, marginBottom: 18, paddingBottom: 14, borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
-          🏢 Thông Tin Công Ty
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-          <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-            <label className="form-label">Tên Công Ty</label>
-            <input className="form-input" defaultValue="Công Ty TNHH Quản Hệ Thống" />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Email Liên Hệ</label>
-            <input className="form-input" defaultValue="info@company.com" />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Số Điện Thoại</label>
-            <input className="form-input" defaultValue="028 3456 7890" />
-          </div>
-          <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-            <label className="form-label">Địa Chỉ</label>
-            <input className="form-input" defaultValue="123 Đường Công Nghiệp, Bình Dương" />
-          </div>
-        </div>
-        <div style={{ paddingTop: 14, borderTop: '1px solid var(--border)' }}>
-          <button className="btn btn-primary btn-sm">Lưu Thay Đổi</button>
-        </div>
-      </div>
-
       {/* Cấu hình hệ thống */}
       <div className="card" style={{ marginBottom: 16 }}>
         <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15, marginBottom: 18, paddingBottom: 14, borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
-          ⚙️ Cấu Hình Hệ Thống
+          Cấu Hình Hệ Thống
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
           <div className="form-group">
@@ -141,19 +101,6 @@ export function SettingsPage() {
         </div>
       </div>
 
-      {/* Nguy hiểm */}
-      <div className="card" style={{ border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.05)' }}>
-        <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15, marginBottom: 8, color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: 8 }}>
-          ⚠️ Vùng Nguy Hiểm
-        </div>
-        <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 16 }}>
-          Các hành động này không thể hoàn tác. Hãy cẩn thận trước khi thực hiện.
-        </p>
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <button className="btn btn-danger btn-sm">Xóa Tất Cả Dữ Liệu Demo</button>
-          <button className="btn btn-danger btn-sm">Đặt Lại Hệ Thống</button>
-        </div>
-      </div>
     </div>
   );
 }

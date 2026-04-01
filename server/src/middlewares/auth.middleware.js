@@ -4,25 +4,34 @@ module.exports = function(req, res, next) {
 
   const authHeader = req.headers.authorization;
 
+  if (!authHeader.startsWith("Bearer ")) {
+    return res.status(404).json({ message: "Invalid token format" });
+  }
+
   if (!authHeader) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(404).json({ message: "Unauthorized" });
   }
 
   const token = authHeader.split(" ")[1];
 
   try {
 
-    const decoded = jwt.verify(token, "secret");
+    const SECRET = process.env.JWT_SECRET;
+
+    const decoded = jwt.verify(token, SECRET);
     req.user = decoded;
     next();
 
   } catch (err) {
-
-        next(error);
+    return res.status(404).json({
+      message: err,
+    });
 
   }
 };
 
+
+/*
 const jwt = require("jsonwebtoken");
 
 module.exports = function authMiddleware(req, res, next) {
@@ -55,3 +64,4 @@ module.exports = function authMiddleware(req, res, next) {
 
   }
 };
+*/

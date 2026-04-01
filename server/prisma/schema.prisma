@@ -19,6 +19,10 @@ model User {
   role          Role       @relation(fields: [role_id], references: [id])
   department    Department @relation(fields: [department_id], references: [id])
 
+  revisionHistories RevisionHistory[] @relation("RevisionCreator")
+  assignedRequests  RequestAssignment[] @relation("AssignedUser")
+  assignedByMe      RequestAssignment[] @relation("AssignedBy")
+
   @@map("users")
 }
 
@@ -37,4 +41,95 @@ model Department {
   users User[]
 
   @@map("departments")
+}
+
+model Request {
+  id            Int      @id @default(autoincrement())
+  code          String   @unique
+  title         String
+
+  product_types  String
+  video_quality  String?
+
+  priority      String
+  deadline      DateTime
+  quantity      Int      @default(1)
+
+  split_by_image  Boolean  @default(false)
+  notes         String?
+
+  status        RequestStatus  @default(pending)
+
+  created_by_id   Int?
+  created_by_name String?
+  assigned_to    Int?
+  resolved_to    Int?
+
+  files             RequestFile[]
+  revisionHistories RevisionHistory[]
+  assignments       RequestAssignment[]
+
+  created_at     DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  
+  @@map("requests")
+
+}
+
+model RequestFile {
+  id        Int      @id @default(autoincrement())
+  request_id Int
+  request   Request  @relation(fields: [request_id], references: [id], onDelete: Cascade)
+
+  file_key       String   @db.VarChar(500)
+  url       String   @db.VarChar(1000)
+  name      String   @db.VarChar(255)
+  size      Int
+  mime_type  String   @db.VarChar(100)
+  file_type  String   @db.VarChar(20)   // image|video|audio|document
+
+  created_at DateTime @default(now())
+
+  @@map("request_files")
+}
+
+model RevisionHistory {
+  id          Int      @id @default(autoincrement())
+  requestId   Int
+  request     Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  comment     String   @db.Text
+  round       Int      @default(1)
+  createdById Int
+  createdBy   User     @relation("RevisionCreator", fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@map("revision_histories")
+}
+
+model RequestAssignment {
+  id           Int     @id @default(autoincrement())
+  requestId    Int
+  request      Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  userId       Int
+  user         User    @relation("AssignedUser", fields: [userId], references: [id])
+
+  assignedById Int
+  assignedBy   User    @relation("AssignedBy", fields: [assignedById], references: [id])
+
+  note         String? @db.Text
+  createdAt    DateTime @default(now())
+
+  @@unique([requestId, userId])
+  @@map("request_assignments")
+}
+
+enum RequestStatus {
+  pending
+  processing
+  done
+  revision 
+  approved
+  rejected
+  cancelled
 }

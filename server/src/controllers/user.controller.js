@@ -25,3 +25,15 @@ exports.getAllUsers = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getUsersDepartment = async (req, res, next) => {
+  try {
+    const departmentId = req.query.departmentId ? parseInt(req.query.departmentId): undefined;
+
+    const users = await userService.getUsersDepartment(departmentId);
+
+    return response.success(res, users, "User list by department");
+  } catch (error) {
+    next(error);
+  }
+};

@@ -30,14 +30,48 @@ CREATE TABLE users (
 
 CREATE TABLE requests (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255),
-    description TEXT,
-    created_by INT,
-    status VARCHAR(50),
-    
-    deadline DATE,
+
+    code VARCHAR(50) NOT NULL UNIQUE,
+    title VARCHAR(255) NOT NULL,
+
+    product_types VARCHAR(255) NOT NULL,
+    video_quality VARCHAR(50) NULL,
+
+    priority ENUM('low', 'medium', 'high') NOT NULL DEFAULT 'medium',
+
+    deadline DATE NOT NULL,
+    quantity INT DEFAULT 1,
+
+    split_by_image BOOLEAN DEFAULT FALSE,
+
+    notes TEXT NULL,
+
+    status ENUM('pending', 'processing', 'done', 'cancelled') DEFAULT 'pending',
+
+    created_by_id INT,
+    assigned_to INT,
+    resolved_to INT,
+    created_by_name VARCHAR(255),
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (created_by) REFERENCES users(id)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE request_file (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    request_id INT NOT NULL,
+
+    file_key VARCHAR(255) NOT NULL,
+    url TEXT NOT NULL,
+
+    name VARCHAR(255),
+    size INT,
+    mime_type VARCHAR(100),
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (request_id) REFERENCES requests(id) ON DELETE CASCADE
 );
 
 CREATE TABLE tasks (

@@ -37,7 +37,7 @@ export const PERMISSIONS = {
   view_dashboard: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.TRUONG_PHONG_SX, ROLES.NHAN_VIEN_KINH_DOANH, ROLES.NHAN_VIEN_SAN_XUAT],
 
   // Yêu cầu (Requests)
-  view_requests: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.NHAN_VIEN_KINH_DOANH],
+  view_requests: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.NHAN_VIEN_KINH_DOANH, ROLES.NHAN_VIEN_SAN_XUAT, ROLES.TRUONG_PHONG_SX],
   create_request: [ROLES.NHAN_VIEN_KINH_DOANH, ROLES.TRUONG_PHONG_KINH_DOANH],
 
   // Phê duyệt (Approvals)
@@ -55,7 +55,7 @@ export const PERMISSIONS = {
   view_reports: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.TRUONG_PHONG_SX],
 
   // Cài đặt (Settings)
-  view_settings: [ROLES.SUPER_ADMIN],
+  view_settings: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_SX, ROLES.NHAN_VIEN_SAN_XUAT, ROLES.TRUONG_PHONG_KINH_DOANH],
 };
 
 export const hasPermission = (role, permission) => {
@@ -86,22 +86,7 @@ export const getMenuItems = (role) => {
       permission: 'view_requests',
       group: 'Kinh Doanh',
     },
-    {
-      key: 'create-request',
-      label: 'Tạo Yêu Cầu',
-      icon: 'FilePlus',
-      path: '/requests/create',
-      permission: 'create_request',
-      group: 'Kinh Doanh',
-    },
-    {
-      key: 'approvals',
-      label: 'Phê Duyệt',
-      icon: 'CheckSquare',
-      path: '/approvals',
-      permission: 'view_approvals',
-      group: 'Quản Lý',
-    },
+  
     {
       key: 'tasks',
       label: 'Công Việc',
@@ -115,6 +100,14 @@ export const getMenuItems = (role) => {
       label: 'Thành Viên',
       icon: 'Users',
       path: '/members',
+      permission: 'view_members',
+      group: 'Quản Lý',
+    },
+      {
+      key: 'members',
+      label: 'Thành Viên',
+      icon: 'Users',
+      path: '/members/create',
       permission: 'view_members',
       group: 'Quản Lý',
     },

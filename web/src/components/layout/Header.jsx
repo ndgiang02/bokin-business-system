@@ -1,22 +1,20 @@
 import { Bell, Search, Menu } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore.js';
+import { authStore } from '../../store/authStore.js';
 import { ROLE_LABELS } from '../../utils/roleUtils.js';
 import '../../css/header.css';
 
 const PAGE_TITLES = {
   '/dashboard':        ['Tổng Quan',       'Dashboard'],
   '/requests':         ['Yêu Cầu',         'Requests'],
-  '/requests/create':  ['Tạo Yêu Cầu',     'Requests'],
   '/approvals':        ['Phê Duyệt',        'Approvals'],
   '/tasks':            ['Công Việc',         'Tasks'],
   '/members':          ['Thành Viên',        'Members'],
-  '/members/create':   ['Thêm Thành Viên',   'Members'],
   '/reports':          ['Báo Cáo',           'Reports'],
   '/settings':         ['Cài Đặt',           'Settings'],
 };
 
 export default function Header({ onMenuToggle }) {
-  const { user } = useAuthStore();
+  const { user } = authStore();
   const path = window.location.pathname;
   const [currentPage, parentPage] = PAGE_TITLES[path] || ['Trang Chủ', ''];
 
@@ -45,12 +43,6 @@ export default function Header({ onMenuToggle }) {
       {/* Actions */}
       <div className="header-actions">
         <span className="header-date">{today}</span>
-
-        <div className="header-role-badge">
-          <div className="role-dot" />
-          {ROLE_LABELS[user?.role]}
-        </div>
-
         <button className="header-icon-btn" title="Tìm kiếm">
           <Search size={16} />
         </button>
