@@ -1,0 +1,48 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Deploy to VPS
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+            cd /root/bokin-business-system || git clone https://ndgiang02:${{ secrets.TOKEN_GIT }}@github.com/nbokin-business-system.git /root/bokin-business-system && cd /root/bokin-business-system
+
+            # Pull update
+            git pull https://ndgiang02:${{ secrets.TOKEN_GIT }}@github.com/ndgiang02/bokin-business-system.git main
+
+            # Tạo file .env
+            mkdir -p server
+              cat <<EOT > server/.env
+                      DATABASE_URL=mysql://root:root@mysql:3306/workflow_db
+
+                      JWT_SECRET=${{ secrets.JWT_SECRET }}
+
+                      MINIO_ENDPOINT=minio
+                      MINIO_PORT=9000
+                      MINIO_USE_SSL=false
+                      MINIO_ACCESS_KEY=${{ secrets.MINIO_ACCESS_KEY }}
+                      MINIO_SECRET_KEY=${{ secrets.MINIO_SECRET_KEY }}
+                      MINIO_BUCKET=business-system
+              EOT
+            docker-compose down
+            docker-compose up -d --build
+
+            docker image prune -f
+          EOF
+
+            
