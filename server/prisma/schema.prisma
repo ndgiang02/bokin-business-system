@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
+  url      = env("mysql://root:root@mysql:3306/workflow_db")
 }
 
 model User {
