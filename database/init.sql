@@ -91,3 +91,45 @@ CREATE TABLE comments (
     content TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE revision_histories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    request_id INT NOT NULL,
+    comment TEXT NOT NULL,
+    round INT DEFAULT 1,
+    created_by_id INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_revision_request
+        FOREIGN KEY (request_id)
+        REFERENCES requests(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_revision_user
+        FOREIGN KEY (created_by_id)
+        REFERENCES users(id)
+);
+
+CREATE TABLE request_assignments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    request_id INT NOT NULL,
+    user_id INT NOT NULL,
+    assigned_by_id INT NOT NULL,
+    note TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_assignment_request
+        FOREIGN KEY (request_id)
+        REFERENCES requests(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_assignment_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id),
+
+    CONSTRAINT fk_assignment_assigned_by
+        FOREIGN KEY (assigned_by_id)
+        REFERENCES users(id),
+
+    CONSTRAINT unique_request_user UNIQUE (request_id, user_id)
+);

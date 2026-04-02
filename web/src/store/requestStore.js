@@ -63,5 +63,15 @@ export const requestStore = create((set, get) => ({
     }
   },
 
+  assignRequest: async (Id, userIds) => {
+    try {
+      const res = await requestApi.assignRequest(Id, userIds);
+      console.log("assignRequest response:", res); // ← thêm
+      return res;
+    } catch (err) {
+      return err;
+    }
+  },
+
   clearError: () => set({ error: null }),
 }));

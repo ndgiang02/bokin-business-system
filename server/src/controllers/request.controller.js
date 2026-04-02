@@ -110,22 +110,21 @@ export async function revision(req, res, next) {
   } catch (err) { next(err); }
 }
  
-// POST /api/requests/:id/assign
-// Body: { userIds: [1, 2, 3] }
-export async function assign(req, res, next) {
-  try {
-    const { userIds } = req.body;
-    if (!userIds?.length) return res.status(400).json({ error: 'Chưa chọn nhân viên' });
-    const assignedById = req.user?.id || 1;
-    const data = await requestService.assignUsers(req.params.id, userIds, assignedById);
-     return response.success(res, data, "Gán nhân viên thành công", 200)
-  } catch (err) { next(err); }
-}
  
 // DELETE /api/requests/:id/assign/:userId
 export async function removeAssign(req, res, next) {
   try {
     await requestService.removeAssignment(req.params.id, req.params.userId);
     return response.success(res, data, "Đã xóa phân công", 200)
+  } catch (err) { next(err); }
+}
+
+export async function assign(req, res, next) {
+  try {
+    
+    const { requestId, userIds } = req.body;
+
+    const data = await requestService.assignUsers(requestId, userIds);
+    return response.success(res, data, "Gán nhân viên thành công", 200)
   } catch (err) { next(err); }
 }

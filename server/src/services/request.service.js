@@ -56,10 +56,8 @@ export async function createRevision(requestId, comment, createdById) {
   return requestModel.createRevision(requestId, comment, createdById);
 }
  
-// ── Gán nhân viên SX ─────────────────────────────────────
-export async function assignUsers(requestId, userIds, assignedById) {
-  await getRequestById(requestId);
-  return requestModel.assignUsers(requestId, userIds, assignedById);
+export async function assignUsers(requestId, userIds) {
+  return requestModel.assignUsers(requestId, userIds);
 }
  
 export async function removeAssignment(requestId, userId) {

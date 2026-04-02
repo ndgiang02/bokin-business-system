@@ -68,7 +68,7 @@ export async function createRequest(data, files = []) {
   return prisma.request.create({
     data: {
       code:         data.code,
-      title:        data.title       || `Đơn ${data.code}`,
+      title:        data.title       || `Yêu cầu ${data.code}`,
       product_types: Array.isArray(data.productTypes)
                       ? data.productTypes.join(',')
                       : data.productTypes,
@@ -80,6 +80,7 @@ export async function createRequest(data, files = []) {
       split_by_image: Boolean(data.splitByImage),
       status:       'pending',
       created_by_id:  data.createdById,
+      created_by_name: data.createdByName || 'Nhân viên',
 
       // Files đính kèm
       files: {
@@ -141,9 +142,8 @@ export async function getRequestById(id) {
     where:   { id: parseInt(id) },
     include: {
       files:            true,
-      createdBy:        { select: { id: true, name: true, role: true } },
       revisionHistories: {
-        orderBy:  { createdAt: 'asc' },
+        orderBy:  { created_at: 'asc' },
         include:  { createdBy: { select: { id: true, name: true } } },
       },
       assignments: {
@@ -186,17 +186,19 @@ export async function createRevision(requestId, comment, createdById) {
 }
 
 // ── Gán nhân viên SX ─────────────────────────────────────
-export async function assignUsers(requestId, userIds, assignedById) {
+export async function assignUsers(requestId, userId) {
   // Upsert từng assignment
-  const ops = userIds.map(userId =>
-    prisma.requestAssignment.upsert({
-      where:  { requestId_userId: { requestId: parseInt(requestId), userId: parseInt(userId) } },
-      create: { requestId: parseInt(requestId), userId: parseInt(userId), assignedById: parseInt(assignedById) },
-      update: { assignedById: parseInt(assignedById) },
-    })
-  );
-  return prisma.$transaction(ops);
+  return await prisma.request.update({
+    where: { id: requestId },
+    data: {
+      status: 'processing',
+      assigned_to: userId,
+      updated_at: new Date(),
+    }
+  });
+
 }
+
 
 // ── Xóa assignment ────────────────────────────────────────
 export async function removeAssignment(requestId, userId) {

@@ -28,6 +28,11 @@ router.post('/create-request',   upload.array('files', 20), controller.create);
 
 router.get("/get-request-byId",controller.getRequestById);
 
+
+router.post('/assign-request', auth, controller.assign);
+
+
+
 // Status
 router.patch('/:id/status', controller.updateStatus);
  

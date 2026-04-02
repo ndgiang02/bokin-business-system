@@ -42,8 +42,13 @@ export const requestApi = {
     }
   },
 
+  assignRequest: async (requestId, userIds) => {
+    const res = await axiosClient.post("/requests/assign-request", { requestId, userIds });
+    return res;
+  },
 
-   updateStatus: async (id, status) => {
+
+ updateStatus: async (id, status) => {
     try {
       const res = await axiosClient.patch(`/requests/${id}/status`, { status });
       return res.data;
@@ -60,17 +65,6 @@ export const requestApi = {
       return res.data;
     } catch (err) {
       console.error('Lỗi createRevision:', err);
-      throw err;
-    }
-  },
-
-  // Gán nhiều users cho request
-  assignUsers: async (id, userIds) => {
-    try {
-      const res = await axiosClient.post(`/requests/${id}/assign`, { userIds });
-      return res.data;
-    } catch (err) {
-      console.error('Lỗi assignUsers:', err);
       throw err;
     }
   },

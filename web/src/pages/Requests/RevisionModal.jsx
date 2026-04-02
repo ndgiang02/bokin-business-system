@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { X, Send, AlertTriangle } from 'lucide-react';
-import { createRevision } from '../../api/requestApi.js';
+import { requestApi } from '../../api/requestApi.js';
 
 export default function RevisionModal({ request, open, onClose, onRevised }) {
   const [comment, setComment] = useState('');
@@ -14,7 +14,7 @@ export default function RevisionModal({ request, open, onClose, onRevised }) {
     if (!comment.trim()) { setError('Vui lòng nhập lý do'); return; }
     setSaving(true); setError('');
     try {
-      await createRevision(request.id, comment);
+      await requestApi.createRevision(request.id, comment);
       onRevised?.();
       onClose();
     } catch (err) {

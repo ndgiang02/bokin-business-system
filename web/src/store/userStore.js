@@ -10,7 +10,6 @@ export const userStore = create((set) => ({
   getAllUser: async() => {
     set({ isLoading: true, error: null });
     const res = await userApi.getAll();
-
     return res;
   },
 

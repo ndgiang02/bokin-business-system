@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { X, Search, UserCheck, Users, Check } from 'lucide-react';
-import { getSXUsers, assignUsers, removeAssign } from '../store/re.js';
 import { ROLE_LABELS, ROLE_COLORS } from '../../utils/roleUtils.js';
+import { userStore }     from '../../store/userStore.js';
+import { requestApi } from '../../api/requestApi.js';
+import { toast } from '../../shared/toast/useToast.js';
+import { requestStore } from '../../store/requestStore.js';
+
 
 export default function AssignModal({ request, open, onClose, onAssigned }) {
   const [users,    setUsers]    = useState([]);
@@ -10,20 +14,15 @@ export default function AssignModal({ request, open, onClose, onAssigned }) {
   const [saving,   setSaving]   = useState(false);
   const [loading,  setLoading]  = useState(false);
 
+  const { getUsersDepartment } = userStore();
+  const { assignRequest } = requestStore();
+
+  
+
   useEffect(() => {
     if (!open) return;
-    setLoading(true);
-    getSXUsers()
-      .then(res => {
-        const list = res.data?.data || res.data || [];
-        setUsers(list);
-        // Pre-select những người đã được assign
-        const assigned = request?.assignments?.map(a => a.user?.id || a.userId) || [];
-        setSelected(assigned);
-      })
-      .finally(() => setLoading(false));
-    setSearch('');
-  }, [open, request]);
+    getUsersDepartment(4).then(r => { setUsers(r);});
+  }, [open, request]); 
 
   if (!open || !request) return null;
 
@@ -41,11 +40,12 @@ export default function AssignModal({ request, open, onClose, onAssigned }) {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await assignUsers(request.id, selected);
+      await assignRequest(request.id, selected[0]);
+
       onAssigned?.();
       onClose();
     } catch (err) {
-      alert(err.response?.data?.error || err.message);
+      toast.error(err.response?.data?.error || err.message || 'Gán nhân viên thất bại');
       setSaving(false);
     }
   };
@@ -62,7 +62,7 @@ export default function AssignModal({ request, open, onClose, onAssigned }) {
         background: 'var(--bg-card)', border: '1px solid var(--border)',
         borderRadius: 14, overflow: 'hidden',
         boxShadow: '0 24px 80px rgba(0,0,0,0.2)',
-        animation: 'modalIn 0.22s cubic-bezier(0.34,1.56,0.64,1)',
+        animation: 'modalIn 0.22s ease-out',
         display: 'flex', flexDirection: 'column',
       }}>
         {/* Header */}
@@ -172,8 +172,11 @@ export default function AssignModal({ request, open, onClose, onAssigned }) {
       </div>
 
       <style>{`
+        @keyframes modalIn {
+          from { opacity: 0; transform: scale(0.97); }
+          to   { opacity: 1; transform: scale(1); }
+        }
         @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes modalIn { from { opacity: 0; transform: translate(-50%, -46%) scale(0.95); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
         @keyframes spin    { to { transform: rotate(360deg); } }
       `}</style>
     </>

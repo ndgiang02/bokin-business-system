@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, LogIn, ChevronRight } from 'lucide-react';
 import { authStore } from '../../store/authStore.js';
+import { toast } from '../../shared/toast/useToast.js';
 import { ROLE_LABELS, ROLE_COLORS } from '../../utils/roleUtils.js';
 
 //const DEMO_ACCOUNTS = MOCK_USERS.map(u => ({ email: u.email, role: u.role, name: u.name }));
@@ -17,7 +18,14 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const ok = await login(email, password);
-    if (ok) navigate('/dashboard');
+    console.log('Login result:', ok);
+    if (ok) {
+        navigate('/dashboard');
+    }
+    else { 
+        //toast.error(ok.message || 'Đăng nhập thất bại');
+    }
+  
   };
 
   return (
@@ -93,18 +101,6 @@ export default function LoginPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit}>
-            {error && (
-              <div style={{
-                background: 'var(--danger-dim)',
-                border: '1px solid rgba(239,68,68,0.3)',
-                borderRadius: 8, padding: '10px 14px',
-                fontSize: 13, color: 'var(--danger)',
-                marginBottom: 16,
-              }}>
-                {error}
-              </div>
-            )}
-
             <div className="form-group">
               <label className="form-label">Email</label>
               <input
@@ -144,6 +140,18 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
+
+            {error && (
+              <div style={{
+                background: 'var(--danger-dim)',
+                border: '1px solid rgba(239,68,68,0.3)',
+                borderRadius: 8, padding: '10px 14px',
+                fontSize: 13, color: 'var(--danger)',
+                marginBottom: 16,
+              }}>
+                {error}
+              </div>
+            )}
 
             <button
               type="submit"

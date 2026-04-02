@@ -95,32 +95,32 @@ model RequestFile {
 
 model RevisionHistory {
   id          Int      @id @default(autoincrement())
-  requestId   Int
-  request     Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  request_id   Int
+  request     Request  @relation(fields: [request_id], references: [id], onDelete: Cascade)
   comment     String   @db.Text
   round       Int      @default(1)
-  createdById Int
-  createdBy   User     @relation("RevisionCreator", fields: [createdById], references: [id])
-  createdAt   DateTime @default(now())
+  created_by_id Int
+  createdBy   User     @relation("RevisionCreator", fields: [created_by_id], references: [id])
+  created_at   DateTime @default(now())
 
   @@map("revision_histories")
 }
 
 model RequestAssignment {
   id           Int     @id @default(autoincrement())
-  requestId    Int
-  request      Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  request_id    Int
+  request      Request @relation(fields: [request_id], references: [id], onDelete: Cascade)
 
-  userId       Int
-  user         User    @relation("AssignedUser", fields: [userId], references: [id])
+  user_id      Int
+  user         User    @relation("AssignedUser", fields: [user_id], references: [id])
 
-  assignedById Int
-  assignedBy   User    @relation("AssignedBy", fields: [assignedById], references: [id])
+  assigned_by_id Int
+  assignedBy   User    @relation("AssignedBy", fields: [assigned_by_id], references: [id])
 
   note         String? @db.Text
-  createdAt    DateTime @default(now())
+  created_at    DateTime @default(now())
 
-  @@unique([requestId, userId])
+  @@unique([request_id, user_id])
   @@map("request_assignments")
 }
 

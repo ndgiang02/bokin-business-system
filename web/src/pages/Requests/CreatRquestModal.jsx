@@ -235,6 +235,7 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
 
     // createdBy
     fd.append('createdById', user?.id || 1);
+    fd.append('createdByName', user?.name || 'Nhân viên');
 
     // append files
     if (files.length > 0) {

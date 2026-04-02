@@ -87,6 +87,7 @@ export const getMenuItems = (role) => {
       group: 'Kinh Doanh',
     },
   
+    /*
     {
       key: 'tasks',
       label: 'Công Việc',
@@ -95,6 +96,7 @@ export const getMenuItems = (role) => {
       permission: 'view_tasks',
       group: 'Sản Xuất',
     },
+    */
     {
       key: 'members',
       label: 'Thành Viên',
@@ -103,14 +105,7 @@ export const getMenuItems = (role) => {
       permission: 'view_members',
       group: 'Quản Lý',
     },
-      {
-      key: 'members',
-      label: 'Thành Viên',
-      icon: 'Users',
-      path: '/members/create',
-      permission: 'view_members',
-      group: 'Quản Lý',
-    },
+    /*
     {
       key: 'reports',
       label: 'Báo Cáo',
@@ -119,6 +114,7 @@ export const getMenuItems = (role) => {
       permission: 'view_reports',
       group: 'Phân Tích',
     },
+    */
     {
       key: 'settings',
       label: 'Cài Đặt',

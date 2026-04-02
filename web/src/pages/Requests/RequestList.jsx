@@ -38,7 +38,7 @@ export default function RequestList() {
   
   const { user } = authStore();
   const { getAllRequets } = requestStore();
-  const { getUsersDepartment } = userStore();
+  const { getAllUser } = userStore();
 
   const navigate = useNavigate();
   const canCreate = hasPermission(user?.role, 'create_request');
@@ -65,7 +65,7 @@ export default function RequestList() {
 
 
   useEffect(() => {
-    getUsersDepartment(3).then(r => { setUsers(r);});
+    getAllUser().then(r => { setUsers(r);});
   }, []);  
 
   useEffect(() => {
