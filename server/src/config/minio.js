@@ -32,7 +32,7 @@ export async function ensureBucket() {
 
 export function getPublicUrl(key) {
   const protocol = process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http';
-  const host     = process.env.MINIO_ENDPOINT || 'minio';
+  const host     = process.env.MINIO_PUBLIC_URL || 'localhost';
   const port     = process.env.MINIO_PORT || '9000';
   return `${protocol}://${host}:${port}/${BUCKET}/${key}`;
 }
