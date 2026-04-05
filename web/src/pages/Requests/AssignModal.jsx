@@ -17,8 +17,6 @@ export default function AssignModal({ request, open, onClose, onAssigned }) {
   const { getUsersDepartment } = userStore();
   const { assignRequest } = requestStore();
 
-  
-
   useEffect(() => {
     if (!open) return;
     getUsersDepartment(4).then(r => { setUsers(r);});
@@ -41,7 +39,7 @@ export default function AssignModal({ request, open, onClose, onAssigned }) {
     setSaving(true);
     try {
       await assignRequest(request.id, selected[0]);
-
+      toast.success('Gán nhân viên thành công');
       onAssigned?.();
       onClose();
     } catch (err) {

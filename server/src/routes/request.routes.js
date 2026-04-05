@@ -2,6 +2,7 @@ const router = require("express").Router();
 
 const controller = require("../controllers/request.controller");
 const { isAllowedMime } = require("../services/upload.service");
+const authMiddleware = require("../middlewares/auth.middleware");
 
 const multer = require("multer");
 
@@ -37,7 +38,7 @@ router.post('/assign-request', auth, controller.assign);
 router.patch('/:id/status', controller.updateStatus);
  
 // Revision — chưa ưng làm lại
-router.post('/:id/revision', controller.revision);
+router.post('/:id/revision', authMiddleware, controller.revision);
  
 // Assign nhân viên SX
 router.post('/:id/assign',               controller.assign);

@@ -43,7 +43,7 @@ export async function updateRequestStatus(id, status) {
 ////hfdhfdfhdjfhdf
 // ── Đổi status ───────────────────────────────────────────
 export async function updateStatus(id, status) {
-  await getRequestById(id);
+  await requestModel.getRequestById(id);
   return requestModel.updateStatus(id, status);
 }
  

@@ -11,6 +11,7 @@ import { authStore } from './store/authStore.js';
 import { hasPermission } from './utils/roleUtils.js';
 import { ToastContainer } from './shared/toast';
 import  { CreateMember } from './pages/Members/CreateMember';
+import  { EditMember } from './pages/Members/EditMember';
 import  MemberList from './pages/Members/MemberList';
 import  { SettingsPage } from "./pages/Settings/SettingsPage";
 
@@ -78,7 +79,9 @@ export default function App() {
           <Route path="/requests" element={<PrivateRoute permission="view_requests"><RequestList /></PrivateRoute>} />
           <Route path="/members" element={<PrivateRoute permission="view_members"><MemberList /></PrivateRoute>} />
           <Route path="/settings" element={<PrivateRoute permission="view_settings"><SettingsPage /></PrivateRoute>} />
-            <Route path="/members/create" element={<PrivateRoute permission="manage_members"><CreateMember /></PrivateRoute>} />
+          <Route path="/members/create" element={<PrivateRoute permission="manage_members"><CreateMember /></PrivateRoute>} />
+          <Route path="/members/edit/:id" element={<PrivateRoute permission="edit_member"><EditMember /></PrivateRoute>} />
+
         </Route>
 
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

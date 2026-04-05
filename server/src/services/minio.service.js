@@ -4,8 +4,8 @@ export const minioClient = new Minio.Client({
   endPoint:  process.env.MINIO_ENDPOINT  || 'minio',
   port:      parseInt(process.env.MINIO_PORT || '9000'),
   useSSL:    process.env.MINIO_USE_SSL === 'true',
-  accessKey: process.env.MINIO_ACCESS_KEY || 'root',
-  secretKey: process.env.MINIO_SECRET_KEY || '12345678',
+  accessKey: process.env.MINIO_ROOT_USER || 'root',
+  secretKey: process.env.MINIO_ROOT_PASSWORD || '12345678',
 });
 
 export const BUCKET = process.env.MINIO_BUCKET || 'business-system';
@@ -32,7 +32,7 @@ export async function ensureBucket() {
 
 export function getPublicUrl(key) {
   const protocol = process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http';
-  const host     = process.env.MINIO_ENDPOINT || 'localhost';
+  const host     = process.env.MINIO_ENDPOINT || 'minio';
   const port     = process.env.MINIO_PORT || '9000';
   return `${protocol}://${host}:${port}/${BUCKET}/${key}`;
 }

@@ -36,4 +36,35 @@ exports.getUsersDepartment = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+}; 
+
+exports.getUserById = async (req, res, next) => {
+  try {
+    const data = await userService.getUserById(req.params.id);
+    return response.success(res, data, "User details");
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+// PUT /api/users/:id
+exports.update = async (req, res, next) => {
+  try {
+    const data = await userService.updateUser(req.params.id, req.body);
+    return response.success(res, data, "Cập nhật thành công");
+  } catch (err) {
+    next(err);
+  }
+};
+
+// DELETE /api/users/:id
+exports.remove = async (req, res, next) => {
+  try {
+    const currentUserId = req.user?.id;
+    await userService.deleteUser(req.params.id, currentUserId);
+    return response.success(res, null, "Xóa tài khoản thành công");
+  } catch (err) {
+    next(err);
+  }
 };

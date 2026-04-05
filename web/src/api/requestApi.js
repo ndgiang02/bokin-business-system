@@ -80,17 +80,6 @@ export const requestApi = {
     }
   },
 
-  // Lấy danh sách nhân viên SX / trưởng phòng SX
-  getSXUsers: async () => {
-    try {
-      const res = await axiosClient.get('/users', { params: { role: 'nhan_vien_san_xuat,truong_phong_sx' } });
-      return res.data;
-    } catch (err) {
-      console.error('Lỗi getSXUsers:', err);
-      throw err;
-    }
-  },
 
-  update: (id, data) => Promise.resolve({ id, ...data }),
   delete: (id) => Promise.resolve({ success: true })
 };

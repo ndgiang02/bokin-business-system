@@ -162,25 +162,22 @@ export async function updateStatus(id, status) {
 }
 
 // ── Revision — thêm lý do + đổi status về in_progress ───
-export async function createRevision(requestId, comment, createdById) {
-  const count = await prisma.revisionHistory.count({
-    where: { requestId: parseInt(requestId) },
-  });
 
+export async function createRevision(requestId, comment, createdById) {
   return prisma.$transaction([
     // Lưu lý do revision
     prisma.revisionHistory.create({
       data: {
-        requestId:   parseInt(requestId),
+        request_id: parseInt(requestId),
         comment,
-        round:       count + 1,
-        createdById: parseInt(createdById),
+        created_by_id: parseInt(createdById),
       },
     }),
-    // Đổi status về in_progress để làm lại
+
+    // Đổi status về processing
     prisma.request.update({
       where: { id: parseInt(requestId) },
-      data:  { status: 'in_progress' },
+      data: { status: 'processing' },
     }),
   ]);
 }

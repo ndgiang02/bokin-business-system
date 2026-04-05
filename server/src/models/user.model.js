@@ -38,6 +38,7 @@ exports.findByEmail = async (email) => {
 
 exports.getAllUsers = async () => {
   const users = await prisma.user.findMany({
+    where: { status: { not: -1 } },
     select: {
       id: true,
       name: true,
@@ -87,4 +88,59 @@ exports.getUsersDepartment = async (departmentId) => {
     role: user.role?.role || null,
     department: user.department?.name || null,
   }));
+};
+
+exports.updateUser = async (id, data) => {
+  return prisma.user.update({
+    where: { id: parseInt(id) },
+    data,
+    select: {
+      id: true,
+    },
+  });
+};
+
+exports.deleteUser = async (id) => {
+  return prisma.user.update({
+    where: { id: parseInt(id) },
+    data: {
+      status: -1,
+    },
+  });
+};
+
+exports.emailExists = async (email, excludeId = null) => {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) return false;
+  if (excludeId && user.id === parseInt(excludeId)) return false;
+
+  return true;
+};
+
+exports.getUserById = async (id) => {
+  const user = await prisma.user.findUnique({
+     where: {
+      id: parseInt(id),
+      status: { not: -1 }, 
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      password: true,
+      phone: true,
+      created_at: true,
+      role_id: true,
+      department_id: true,
+    }
+  });
+
+  if (!user) return null;
+
+  return {
+    ...user
+  };
 };

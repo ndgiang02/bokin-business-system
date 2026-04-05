@@ -103,7 +103,8 @@ export async function updateStatus(req, res, next) {
 export async function revision(req, res, next) {
   try {
     const { comment } = req.body;
-    if (!comment?.trim()) return res.status(400).json({ error: 'Vui lòng nhập lý do revision' });
+    if (!comment?.trim()) return res.status(400).json({ error: 'Vui lòng nhập lý do revision' })
+
     const createdById = req.user?.id || 1;
     const data = await requestService.createRevision(req.params.id, comment, createdById);
     res.json({ success: true, message: 'Đã gửi yêu cầu làm lại', data });

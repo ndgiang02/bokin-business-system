@@ -157,7 +157,6 @@ export default function RequestList() {
         </button>
         <select className="form-select" style={{ width: 'auto' }} value={sortBy} onChange={e => setSortBy(e.target.value)}>
           <option value="newest">Mới nhất</option>
-          <option value="amount">Giá trị cao nhất</option>
           <option value="deadline">Deadline gần nhất</option>
         </select>
         {(search || statusFilter !== 'all' || priorityFilter !== 'all') && (
@@ -296,7 +295,7 @@ export default function RequestList() {
        {selected && (
         <RequestDetail
           selected={selected}
-          onClose={() => setSelected(null)}
+          onClose={() => {setSelected(null); fetchRequests();}}
           PRIORITY_MAP={PRIORITY_MAP}
           STATUS_MAP={STATUS_MAP}
         />

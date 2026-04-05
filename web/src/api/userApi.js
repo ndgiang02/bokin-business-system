@@ -17,24 +17,26 @@ export const userApi = {
     }
   },
 
-  getById: async (id) => {
-    const res = await axiosClient.get(`/users/${id}`);
-    return res.data.data;
-  },
-
   create: async (data) => {
     const res = await axiosClient.post("/users/create-user", data);
     return res.data.data;
   },
 
-  update: async (id, data) => {
-    const res = await axiosClient.put(`/users/${id}`, data);
+   // GET /api/users/get-user/:id
+  getById: async (id) => {
+    const res = await axiosClient.get(`/users/get-user-byId/${id}`);
     return res.data.data;
   },
 
-  delete: async (id) => {
-    const res = await axiosClient.delete(`/users/${id}`);
+  // PUT /api/users/update-user/:id
+  update: async (id, data) => {
+    const res = await axiosClient.put(`/users/update-user/${id}`, data);
     return res.data.data;
-  }
+  },
 
+  // DELETE /api/users/delete-user/:id
+  delete: async (id) => {
+    const res = await axiosClient.delete(`/users/delete-user/${id}`);
+    return res.data;
+  },
 };

@@ -21,7 +21,7 @@ function fixUrl(url) {
 
 const STATUS_CONFIG = {
   pending:     { label: 'Chờ Duyệt',  color: '#f59e0b', bg: 'rgba(245,158,11,0.12)',  dot: '#f59e0b' },
-  in_progress: { label: 'Đang Xử Lý', color: '#3b82f6', bg: 'rgba(59,130,246,0.12)',  dot: '#3b82f6' },
+  processing: { label: 'Đang Xử Lý', color: '#3b82f6', bg: 'rgba(59,130,246,0.12)',  dot: '#3b82f6' },
   done:        { label: 'Hoàn Thành', color: '#10b981', bg: 'rgba(16,185,129,0.12)',   dot: '#10b981' },
   revision:    { label: 'Làm Lại',    color: '#f97316', bg: 'rgba(249,115,22,0.12)',   dot: '#f97316' },
   approved:    { label: 'Đã Duyệt',   color: '#6366f1', bg: 'rgba(99,102,241,0.12)',   dot: '#6366f1' },
@@ -343,8 +343,10 @@ export default function RequestDetail({ selected, onClose }) {
   const [actionLoading, setActionLoading] = useState(false);
   const [activeTab,    setActiveTab]    = useState('info'); // 'info' | 'files' | 'history'
 
-  const { getRequestById, updateRequestStatus } = requestStore();
+  const { getRequestById, updateStatus } = requestStore();
   const { user } = authStore();
+  const [updating, setUpdating] = useState(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -376,14 +378,15 @@ export default function RequestDetail({ selected, onClose }) {
 
   // ── Permissions ──────────────────────────────────────────
   const isCreator   = request.createdById === user?.id || request.created_by_id === user?.id;
+  const isTruongPhongKD   = user?.role === ROLES.TRUONG_PHONG_KINH_DOANH;
   const isTruongPhong = user?.role === ROLES.TRUONG_PHONG_SX;
-  const isNhanVien  = user?.role === ROLES.NHAN_VIEN;
-  const isAssigned  = request.assignments?.some(a => a.user?.id === user?.id || a.userId === user?.id);
+  const isNhanVien  = user?.role === ROLES.NHAN_VIEN_SAN_XUAT;
+  const isAssigned  = request.assigned_to === user?.id;
 
   const canAssign   = isTruongPhong;
-  const canRevision = request.status === 'done' && isCreator;
-  const canComplete = (isNhanVien && isAssigned) && request.status === 'in_progress';
-  const canCancel   = (isCreator || isTruongPhong) && ['pending', 'in_progress'].includes(request.status);
+  const canRevision = request.status === 'done' && isTruongPhongKD;
+  const canComplete = isAssigned && request.status === 'processing';
+  const canCancel   = (isCreator || isTruongPhong) && ['pending', 'processing'].includes(request.status);
   const canApprove  = isTruongPhong && request.status === 'done';
   const canReject   = isTruongPhong && request.status === 'done';
 
@@ -407,7 +410,7 @@ export default function RequestDetail({ selected, onClose }) {
         approve:  'approved',
         reject:   'rejected',
       };
-      await updateRequestStatus?.(request.id, statusMap[type]);
+      await updateStatus?.(request.id, statusMap[type]);
       const d = await getRequestById(selected);
       setRequest(d?.data || d);
     } catch (err) {
@@ -415,6 +418,18 @@ export default function RequestDetail({ selected, onClose }) {
     } finally {
       setActionLoading(false);
       setConfirm(null);
+    }
+  };
+
+  const handleUpdateStatus = async (status) => {
+    setUpdating(true);
+    try {
+      await updateStatus(request.id, status);
+      onClose();
+    } catch (err) {
+      alert(err.response?.data?.error || err.message);
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -626,7 +641,15 @@ export default function RequestDetail({ selected, onClose }) {
                       <FileText size={12} color="#f59e0b" />
                       <span style={{ fontSize: 11, fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Ghi chú</span>
                     </div>
-                    <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{request.notes}</div>
+                    <div  style={{
+                          fontSize: 13,
+                          color: 'var(--text-secondary)',
+                          lineHeight: 1.6,
+                          wordBreak: 'break-word',    
+                          overflowWrap: 'break-word',   
+                          whiteSpace: 'pre-wrap'       
+                        }}>
+                          {request.notes}</div>
                   </div>
                 )}
 
@@ -684,38 +707,50 @@ export default function RequestDetail({ selected, onClose }) {
             {activeTab === 'history' && (
               <div>
                 {hasHistory ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    {request.revisionHistories.map((r, idx) => (
-                      <div key={r.id} style={{
-                        background: 'rgba(249,115,22,0.06)',
-                        border: '1px solid rgba(249,115,22,0.2)',
-                        borderRadius: 10, padding: '12px 14px',
-                        borderLeft: '3px solid #f97316',
-                        position: 'relative',
-                      }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{
-                              fontSize: 11, fontWeight: 800, color: '#f97316',
-                              fontFamily: 'var(--font-mono)',
-                              background: 'rgba(249,115,22,0.12)',
-                              padding: '2px 8px', borderRadius: 6,
-                            }}>
-                              Lần {r.round ?? (idx + 1)}
-                            </span>
-                            <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                              {formatDate(r.createdAt || r.created_at)}
-                            </span>
-                          </div>
-                        </div>
-                        <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 6 }}>{r.comment}</div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text-muted)' }}>
-                          <User size={10} />
-                          {r.createdBy?.name || r.created_by_name || 'Ẩn danh'}
+                  <div style={{ 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      gap: 10, 
+                      maxHeight: 300,  // chiều cao tối đa, bạn có thể tùy chỉnh
+                      overflowY: 'auto',
+                      paddingRight: 6 // tránh bị che scroll
+                    }}>
+                      {[...request.revisionHistories]
+                        .sort((a, b) => new Date(b.createdAt || b.created_at) - new Date(a.createdAt || a.created_at))
+                        .map((r, idx, arr) => (
+                          <div key={r.id} style={{
+                            background: 'rgba(249,115,22,0.06)',
+                            border: '1px solid rgba(249,115,22,0.2)',
+                            borderRadius: 10, 
+                            padding: '12px 14px',
+                            borderLeft: '3px solid #f97316',
+                            position: 'relative',
+                          }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                              <span style={{
+                            fontSize: 11, fontWeight: 800, color: '#f97316',
+                            fontFamily: 'var(--font-mono)',
+                            background: 'rgba(249,115,22,0.12)',
+                            padding: '2px 8px', borderRadius: 6,
+                          }}>
+                            {arr.length - idx}
+                          </span>
+                          <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                            {formatDate(r.createdAt || r.created_at)}
+                          </span>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                      <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 6 }}>
+                        {r.comment}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text-muted)' }}>
+                        <User size={10} />
+                        {r.createdBy?.name || r.created_by_name || 'Ẩn danh'}
+                      </div>
+                    </div>
+                ))}
+              </div>
                 ) : (
                   <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
                     <History size={28} style={{ marginBottom: 8, opacity: 0.4 }} />
@@ -752,7 +787,7 @@ export default function RequestDetail({ selected, onClose }) {
                 <ActionButton
                   icon={<CheckCircle size={14} />}
                   label="Hoàn thành"
-                  onClick={() => setConfirm('complete')}
+                  onClick={() => { handleUpdateStatus('done') }}
                   color="#10b981"
                 />
               )}

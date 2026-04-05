@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://root:root@mysql:3306/workflow_db"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -16,9 +16,11 @@ model User {
   phone         String
   department_id Int
   created_at    DateTime @default(now())
+  updated_at    DateTime @default(now())
+  status        Int
+
   role          Role       @relation(fields: [role_id], references: [id])
   department    Department @relation(fields: [department_id], references: [id])
-
   revisionHistories RevisionHistory[] @relation("RevisionCreator")
   assignedRequests  RequestAssignment[] @relation("AssignedUser")
   assignedByMe      RequestAssignment[] @relation("AssignedBy")

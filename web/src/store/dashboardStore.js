@@ -99,7 +99,7 @@ export const useDashboardStore = create((set, get) => ({
       chart:          chartRes.status          === 'fulfilled' ? (chartRes.value.data          ?? chartRes.value)          : [],
       //recentRequests: recentRes.status         === 'fulfilled' ? (recentRes.value.data         ?? recentRes.value)         : [],
       activities:     activitiesRes.status     === 'fulfilled' ? (activitiesRes.value.data     ?? activitiesRes.value)     : [],
-      userTasks:         userTaskRes.status     === 'fulfilled' ? (userTaskRes.value.data     ?? userTaskRes.value)     : [],
+      userTasks:      userTaskRes.status     === 'fulfilled' ? (userTaskRes.value.data     ?? userTaskRes.value)     : [],
       loading: { stats: false, chart: false, activities: false, userTask: false },
       error: results.some(r => r.status === 'rejected')
         ? results.find(r => r.status === 'rejected')?.reason?.message

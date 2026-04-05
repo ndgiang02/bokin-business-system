@@ -24,6 +24,9 @@ CREATE TABLE users (
     department_id INT,
     phone VARCHAR(20),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    status INT DEFAULT 1,
+    
     FOREIGN KEY (role_id) REFERENCES roles(id),
     FOREIGN KEY (department_id) REFERENCES departments(id)
 );
@@ -57,7 +60,7 @@ CREATE TABLE requests (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE request_file (
+CREATE TABLE request_files (
     id INT AUTO_INCREMENT PRIMARY KEY,
 
     request_id INT NOT NULL,
@@ -68,6 +71,7 @@ CREATE TABLE request_file (
     name VARCHAR(255),
     size INT,
     mime_type VARCHAR(100),
+    file_type VARCHAR(50),
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 

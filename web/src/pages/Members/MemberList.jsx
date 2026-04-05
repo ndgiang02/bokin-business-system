@@ -4,6 +4,7 @@ import { UserPlus, Search, Trash2, Edit, Shield, Phone, Mail, Building2, Calenda
 import { authStore } from '../../store/authStore.js';
 import { userStore } from '../../store/userStore.js';
 import { hasPermission, ROLE_LABELS, ROLE_COLORS } from '../../utils/roleUtils.js';
+import { toast } from '../../shared/toast/useToast.js';
 import { CreateMember } from './CreateMember.jsx';
 
 export default function MemberList() {
@@ -14,7 +15,7 @@ export default function MemberList() {
   const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'table'
   const [loading, setLoading] = useState(true);
   const { user } = authStore();
-  const { getAllUser } = userStore();
+  const { getAllUser, deleteUser } = userStore();
   const navigate = useNavigate();
   const canManage = hasPermission(user?.role, 'manage_members');
 
@@ -33,10 +34,18 @@ export default function MemberList() {
     setFiltered(res);
   }, [search, roleFilter, members]);
 
-  const handleDelete = (id) => {
-    if (window.confirm('Xác nhận xóa thành viên này?')) {
-      setMembers(prev => prev.filter(m => m.id !== id));
+  const handleDelete = async (id) => {
+    if (!window.confirm('Xác nhận xóa thành viên này?')) {
+      return;
     }
+
+  const success = await deleteUser(id);
+
+  if (success) {
+    setMembers(prev => prev.filter(m => m.id !== id));
+  } else {
+    toast.error("Xóa thất bại");
+  }
   };
 
   const roles = [...new Set(members.map(m => m.role))];
@@ -218,7 +227,7 @@ export default function MemberList() {
                 {/* Actions */}
                 {canManage && (
                   <div style={{ display: 'flex', gap: 8, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
-                    <button className="btn btn-outline btn-sm" style={{ flex: 1, justifyContent: 'center', display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <button className="btn btn-outline btn-sm" style={{ flex: 1, justifyContent: 'center', display: 'flex', alignItems: 'center', gap: 5 }} onClick={() => navigate(`/members/edit/${member.id}`)}>
                       <Edit size={12} /> Sửa
                     </button>
                     {member.id !== 1 && (

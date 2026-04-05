@@ -50,6 +50,7 @@ export const PERMISSIONS = {
   // Thành viên (Members)
   view_members: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.TRUONG_PHONG_SX],
   manage_members: [ROLES.SUPER_ADMIN],
+  edit_member: [ROLES.SUPER_ADMIN],
 
   // Báo cáo (Reports)
   view_reports: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.TRUONG_PHONG_SX],

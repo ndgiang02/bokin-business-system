@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import { authStore }     from '../../store/authStore.js';
 import { requestStore } from '../../store/requestStore.js';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 // ── Constants ─────────────────────────────────────────────
 const QUALITY_OPTIONS = [
@@ -149,7 +151,7 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
 
   const [form, setForm] = useState({
     code: '', productTypes: [], videoQuality: '',
-    priority: '', deadline: '', quantity: 1,
+    priority: '', deadline: null, quantity: 1,
     splitByImage: false, notes: '',
   });
 
@@ -228,7 +230,11 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
     Object.entries(form).forEach(([key, value]) => {
       if (key === 'productTypes') {
         fd.append(key, value.join(',')); // array  string
-      } else {
+      } 
+      else if (key === 'deadline') {
+        fd.append(key, value ? value.toISOString() : '');
+      } 
+      else {
         fd.append(key, value ?? '');
       }
     });
@@ -318,7 +324,7 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
               {/* Mã */}
               <FieldRow label="Mã" required>
                 <div>
-                  <input className="form-input" style={{ maxWidth: 180 }} placeholder="VD: A488" value={form.code} onChange={e => set('code', e.target.value)} />
+                  <input className="form-input" style={{ maxWidth: 260 }} placeholder="VD: A488" value={form.code} onChange={e => set('code', e.target.value)} />
                   {errors.code && <div style={{ fontSize: 11, color: 'var(--danger)', marginTop: 4 }}>⚠ {errors.code}</div>}
                 </div>
               </FieldRow>
@@ -378,7 +384,7 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
               {/* Ưu tiên */}
               <FieldRow label="Mức độ ưu tiên" required>
                 <div>
-                  <select className="form-select" style={{ maxWidth: 240 }} value={form.priority} onChange={e => set('priority', e.target.value)}>
+                  <select className="form-select" style={{ maxWidth: 260 }} value={form.priority} onChange={e => set('priority', e.target.value)}>
                     {PRIORITY_OPTIONS.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
                   </select>
                   {errors.priority && <div style={{ fontSize: 11, color: 'var(--danger)', marginTop: 4 }}>⚠ {errors.priority}</div>}
@@ -387,9 +393,24 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
 
               {/* Thời hạn */}
               <FieldRow label="Thời hạn" required>
-                <div>
-                  <input className="form-input" type="datetime-local" style={{ maxWidth: 260 }} value={form.deadline} onChange={e => set('deadline', e.target.value)} />
-                  {errors.deadline && <div style={{ fontSize: 11, color: 'var(--danger)', marginTop: 4 }}>⚠ {errors.deadline}</div>}
+                <div style={{ maxWidth: 260 }}>
+                  <DatePicker
+                    selected={form.deadline ? new Date(form.deadline) : null}
+                    onChange={(date) => set('deadline', date)}
+                    
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={15}
+                    dateFormat="dd/MM/yyyy HH:mm"
+                    placeholderText="Chọn thời hạn"
+                    className="form-input"
+                  />
+
+                  {errors.deadline && (
+                    <div style={{ fontSize: 11, color: 'var(--danger)', marginTop: 4 }}>
+                      ⚠ {errors.deadline}
+                    </div>
+                  )}
                 </div>
               </FieldRow>
 
@@ -445,13 +466,14 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
                 </div>
               </FieldRow>
 
-              {/* Lựa chọn thêm */}
+              {/* Lựa chọn thêm 
               <FieldRow label="Lựa chọn thêm">
                 <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', userSelect: 'none' }}>
                   <Checkbox checked={form.splitByImage} onChange={() => set('splitByImage', !form.splitByImage)} />
                   <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Mỗi hình minh họa tạo ra 1 đơn riêng</span>
                 </label>
               </FieldRow>
+              */}
 
               {/* Ghi chú */}
               <FieldRow label="Ghi chú">
@@ -504,6 +526,13 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
         @media (max-width: 640px) {
           .create-modal { top: auto !important; bottom: 0 !important; left: 0 !important; transform: none !important; width: 100% !important; max-width: 100% !important; max-height: 92dvh !important; border-radius: 20px 20px 0 0 !important; }
           .field-row { grid-template-columns: 1fr !important; gap: 4px !important; }
+        }
+        .react-datepicker-wrapper {
+          width: 100%;
+        }
+
+        .react-datepicker__input-container input {
+          width: 260px;
         }
       `}</style>
     </>
