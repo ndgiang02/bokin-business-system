@@ -49,7 +49,7 @@ CREATE TABLE requests (
 
     notes TEXT NULL,
 
-    status ENUM('pending', 'processing', 'done', 'cancelled') DEFAULT 'pending',
+    status ENUM('pending','processing','done','revision','rejected','cancelled') DEFAULT 'pending',
 
     created_by_id INT,
     assigned_to INT,

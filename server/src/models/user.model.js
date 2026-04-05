@@ -67,6 +67,7 @@ exports.getUsersDepartment = async (departmentId) => {
   const users = await prisma.user.findMany({
     where: {
       ...(departmentId && { department_id: departmentId }),
+      status: { not: -1 }
     },
     select: {
       id: true,
