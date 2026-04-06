@@ -29,10 +29,10 @@ export function isAllowedMime(mimeType) {
 }
 
 const SIZE_LIMITS = {
-  image:    10 * 1024 * 1024,   // 10MB
+  image:    30 * 1024 * 1024,   // 30MB
   video:    100 * 1024 * 1024,  // 100MB
-  audio:    20 * 1024 * 1024,   // 20MB
-  document: 20 * 1024 * 1024,   // 20MB
+  audio:    30 * 1024 * 1024,   // 30MB
+  document: 30 * 1024 * 1024,   // 30MB
 };
 
 export function checkSizeLimit(mimeType, size) {
