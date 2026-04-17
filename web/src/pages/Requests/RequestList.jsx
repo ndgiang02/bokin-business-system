@@ -228,7 +228,7 @@ export default function RequestList() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
                 <tr>
-                  {['Mã YC', 'Ngày Tạo', 'Ưu Tiên', 'Trạng Thái', 'Hạn bàn giao', 'Người Tạo','Người thực hiện', ''].map(col => (
+                  {['Mã YC', 'Ngày Tạo', 'Ưu Tiên', 'Trạng Thái', 'Hạn bàn giao', 'Người Tạo','Người thực hiện', 'Bộ phận tiếp nhận'].map(col => (
                     <th key={col} style={{
                       padding: '10px 16px', textAlign: 'left', fontSize: 10,
                       fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase',
@@ -260,6 +260,7 @@ export default function RequestList() {
                     <td style={{ padding: '13px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{r.created_by_name}</td>
                     {/*{userMap[r.assigned_to] || '—'}*/}
                     <td style={{ padding: '13px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>  {userMap[r.assigned_to] || '—'}</td>
+                    <td style={{ padding: '13px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>  {r.department_assigned_name || '—'}</td>
                     <td style={{ padding: '13px 16px' }}>
                       <div style={{ display: 'flex', gap: 5 }}>
                         <button

@@ -12,7 +12,8 @@ CREATE TABLE roles (
 
 CREATE TABLE departments (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL
+    name VARCHAR(100) NOT NULL,
+    code VARCHAR(50)
 );
 
 CREATE TABLE users (
@@ -40,7 +41,7 @@ CREATE TABLE requests (
     product_types VARCHAR(255) NOT NULL,
     video_quality VARCHAR(50) NULL,
 
-    priority ENUM('low', 'medium', 'high') NOT NULL DEFAULT 'medium',
+    priority ENUM('low', 'medium', 'high', 'urgent') NOT NULL DEFAULT 'medium',
 
     deadline DATE NOT NULL,
     quantity INT DEFAULT 1,
@@ -54,6 +55,8 @@ CREATE TABLE requests (
     created_by_id INT,
     assigned_to INT,
     resolved_to INT,
+    department_assigned INT,
+
     created_by_name VARCHAR(255),
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

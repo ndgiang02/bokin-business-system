@@ -5,6 +5,8 @@ import {
 } from 'lucide-react';
 import { authStore }    from '../../store/authStore.js';
 import { requestStore } from '../../store/requestStore.js';
+import { departStore } from '../../store/departmentStore.js';
+
 import { toast }        from '../../shared/toast';
 
 const QUALITY_OPTIONS = [
@@ -80,6 +82,8 @@ function Checkbox({ checked, onChange }) {
 export default function CreateRequestModal({ open, onClose, onCreated }) {
   const { user }          = authStore();
   const { createRequest } = requestStore();   // bỏ isLoading, error, clearError không dùng
+  const { getAlldepartments } = departStore();
+  
 
   const fileInputRef = useRef();
 
@@ -88,11 +92,26 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
   const [qualityOpen, setQualityOpen] = useState(false);
   const [dragOver,    setDragOver]    = useState(false);
   const [images,      setImages]      = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [roles, setRoles] = useState([]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const [depRes, roleRes] = await Promise.all([
+         getAlldepartments(),
+         //getAllRoles()
+      ]);
+
+      setDepartments(depRes.data.data);
+      //setRoles(roleRes.data.data);
+    };
+
+    fetchData();
+  }, []);
   const [form, setForm] = useState({
     code: '', productTypes: [], videoQuality: '',
     priority: '', deadline: '', quantity: 1,
-    splitByImage: false, notes: '',
+    splitByImage: false, notes: '', department: '',
   });
 
   const generateCode = () => {
@@ -334,6 +353,30 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
                   {PRIORITY_OPTIONS.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
                 </select>
                 {errors.priority && <div style={{ fontSize: 11, color: 'var(--danger)', marginTop: 4 }}>⚠ {errors.priority}</div>}
+              </div>
+            </FieldRow>
+
+            <FieldRow label="Phòng ban" required>
+              <div>
+                <select
+                  className="form-select"
+                  style={{ maxWidth: 240 }}
+                  value={form.department}
+                  onChange={e => set('department', e.target.value)}
+                >
+                  <option value="">-- Chọn phòng ban --</option>
+                  {departments.map(d => (
+                    <option key={d.value} value={d.value}>
+                      {d.label}
+                    </option>
+                  ))}
+                </select>
+
+                {errors.department && (
+                  <div style={{ fontSize: 11, color: 'var(--danger)', marginTop: 4 }}>
+                    ⚠ {errors.department}
+                  </div>
+                )}
               </div>
             </FieldRow>
 

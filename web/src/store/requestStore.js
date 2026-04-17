@@ -21,7 +21,7 @@ export const requestStore = create((set, get) => ({
       err.response?.data?.error || err.message || 'Có lỗi xảy ra';
 
     set({ error: message });
-    throw new Error(message); // 👈 QUAN TRỌNG
+    throw new Error(message);
   } finally {
     set({ isSaving: false, uploadPct: 0 });
   }

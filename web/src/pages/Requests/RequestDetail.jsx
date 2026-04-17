@@ -584,6 +584,10 @@ export default function RequestDetail({ selected, onClose }) {
                     </div>
                   </InfoCard>
 
+                  <InfoCard label="Phòng tiếp nhận" icon={<Package size={10} />}>
+                    {request?.department_assigned_name || '—'}
+                  </InfoCard>
+
                   <InfoCard label="Loại sản phẩm" icon={<Package size={10} />}>
                     {request?.product_types || '—'}
                   </InfoCard>

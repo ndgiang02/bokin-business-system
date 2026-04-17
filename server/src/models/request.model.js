@@ -36,11 +36,21 @@ export async function getAllRequests(filters = {}, pagination = {}) {
         created_at: true,
         assigned_to: true,
         created_by_name: true,
+         department: {
+          select: {
+            name: true,
+          },
+        },
       },
     }),
   ]);
 
-  return { items: data, total, page, limit, totalPages: Math.ceil(total / limit) };
+  const items = data.map(item => ({
+    ...item,
+    department_assigned_name: item.department?.name || null,
+  }));
+
+  return { items, total, page, limit, totalPages: Math.ceil(total / limit) };
 }
 
 
@@ -81,6 +91,7 @@ export async function createRequest(data, files = []) {
       status:       'pending',
       created_by_id:  data.createdById,
       created_by_name: data.createdByName || 'Nhân viên',
+      department_assigned: data.department_assigned ? parseInt(data.department_assigned, 10) : null,
 
       // Files đính kèm
       files: {
@@ -129,28 +140,61 @@ export async function getRequests(filters = {}, pagination = {}) {
         assignments: {
           include: { user: { select: { id: true, name: true } } },
         },
+        department: {
+          select: {
+            name: true,
+          },
+        },
       },
     }),
   ]);
 
-  return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+   const items = data.map(item => ({
+    ...item,
+    department_assigned_name: item.department?.name || null,
+  }));
+
+  return { items, total, page, limit, totalPages: Math.ceil(total / limit) };
 }
 
-// ── Lấy 1 request ────────────────────────────────────────
+// ── Lấy 1 request ───────────────────────────────────────
+
 export async function getRequestById(id) {
-  return prisma.request.findUnique({
-    where:   { id: parseInt(id) },
+  const data = await prisma.request.findUnique({
+    where: { id: parseInt(id) },
     include: {
-      files:            true,
-      revisionHistories: {
-        orderBy:  { created_at: 'asc' },
-        include:  { createdBy: { select: { id: true, name: true } } },
+      files: true,
+
+      department: {
+        select: { name: true },
       },
+
+      revisionHistories: {
+        orderBy: { created_at: "asc" },
+        include: {
+          createdBy: {
+            select: { id: true, name: true },
+          },
+        },
+      },
+
       assignments: {
-        include: { user: { select: { id: true, name: true, role: true } } },
+        include: {
+          user: {
+            select: { id: true, name: true, role: true },
+          },
+        },
       },
     },
   });
+
+  if (!data) return null;
+
+  return {
+    ...data,
+
+    department_assigned_name: data.department?.name || null,
+  };
 }
 
 // ── Cập nhật status ──────────────────────────────────────

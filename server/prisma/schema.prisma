@@ -40,7 +40,10 @@ model Role {
 model Department {
   id    Int    @id @default(autoincrement())
   name  String
+  code  String? @unique
+
   users User[]
+  requests Request[]
 
   @@map("departments")
 }
@@ -70,7 +73,9 @@ model Request {
   files             RequestFile[]
   revisionHistories RevisionHistory[]
   assignments       RequestAssignment[]
-
+  
+  department_assigned Int?
+  department Department? @relation(fields: [department_assigned], references: [id])
   created_at     DateTime @default(now())
   updated_at    DateTime @updatedAt
   

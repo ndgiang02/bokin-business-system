@@ -7,13 +7,13 @@ INSERT INTO roles (role, name) VALUES
 ('nhan_vien_kinh_doanh', 'Nhân viên kinh doanh'),
 ('nhan_vien_san_xuat', 'Nhân viên sản xuất');
 
-INSERT INTO departments (name) VALUES
-    ('Super Admin'),
-    ('Ban Giám Đốc'),
-    ('Phòng Kinh Doanh'),
-    ('Phòng Sản Xuất'),
-    ('Phòng Kế Toán'),
-    ('Phòng IT')
+INSERT INTO departments (name, code) VALUES
+    ('Super Admin', 'AD'),
+    ('Ban Giám Đốc', 'GD'),
+    ('Phòng Kinh Doanh', 'KD'),
+    ('Phòng Sản Xuất', 'SX'),
+    ('Phòng Kế Toán', 'KT'),
+    ('Phòng IT', 'IT')
 ;
 
 INSERT INTO users (name, email, password, role_id,department_id, phone)

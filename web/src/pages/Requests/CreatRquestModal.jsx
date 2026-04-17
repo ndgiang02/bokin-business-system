@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import { authStore }     from '../../store/authStore.js';
 import { requestStore } from '../../store/requestStore.js';
+import { departStore } from '../../store/departmentStore.js';
+
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -130,6 +132,8 @@ function FileItem({ file, onRemove }) {
 export default function CreateRequestModal({ open, onClose, onCreated }) {
   const { user }      = authStore();
   const { createRequest } = requestStore();
+    const { getAlldepartments } = departStore();
+  
   const fileInputRef  = useRef();
 
   const [saving,      setSaving]      = useState(false);
@@ -152,12 +156,28 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
   const [form, setForm] = useState({
     code: '', productTypes: [], videoQuality: '',
     priority: '', deadline: null, quantity: 1,
-    splitByImage: false, notes: '',
+    splitByImage: false, notes: '', department_assigned: '',
   });
+
+const [departments, setDepartments] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getAlldepartments();
+        setDepartments(res?.data?.data || []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
 
   useEffect(() => {
     if (open) {
-      setForm({ code: generateCode(), productTypes: [], videoQuality: '', priority: '', deadline: '', quantity: 1, splitByImage: false, notes: '' });
+      setForm({ code: generateCode(), productTypes: [], videoQuality: '', priority: '', deadline: '', quantity: 1, splitByImage: false, notes: '', department_assigned: '' });
       setFiles([]); setErrors({}); setSaved(false); setSaving(false);
       setUploadPct(0); setUploadError('');
     }
@@ -210,6 +230,7 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
     if (form.productTypes.length === 0)  e.productTypes = 'Chọn ít nhất 1 loại';
     if (!form.priority)                  e.priority     = 'Vui lòng chọn mức ưu tiên';
     if (!form.deadline)                  e.deadline     = 'Vui lòng chọn thời hạn';
+    if (!form.department_assigned)       e.department   = 'Vui lòng chọn phòng ban';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -234,6 +255,9 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
       else if (key === 'deadline') {
         fd.append(key, value ? value.toISOString() : '');
       } 
+      else if (key === 'department_assigned') {
+        fd.append(key, value ? Number(value) : '');
+      }
       else {
         fd.append(key, value ?? '');
       }
@@ -250,10 +274,13 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
       });
     }
 
+
+
     // call API (có progress)
     const data = await createRequest(fd, (pct) => {
       setUploadPct(pct);
     });
+
 
     // success
     setSaved(true);
@@ -390,6 +417,30 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
                   {errors.priority && <div style={{ fontSize: 11, color: 'var(--danger)', marginTop: 4 }}>⚠ {errors.priority}</div>}
                 </div>
               </FieldRow>
+
+               <FieldRow label="Phòng ban tiếp nhận" required>
+              <div>
+                <select
+                  className="form-select"
+                  style={{ maxWidth: 260 }}
+                  value={form.department_assigned}
+                  onChange={e => set('department_assigned', Number(e.target.value))}
+                >
+                  <option value="">-- Chọn phòng ban --</option>
+                  {departments.map(d => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
+                </select>
+
+                {errors.department && (
+                  <div style={{ fontSize: 11, color: 'var(--danger)', marginTop: 4 }}>
+                    ⚠ {errors.department}
+                  </div>                
+                )}
+              </div>
+            </FieldRow>
 
               {/* Thời hạn */}
               <FieldRow label="Thời hạn" required>

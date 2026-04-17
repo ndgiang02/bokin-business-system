@@ -122,6 +122,9 @@ networks:
   workflow-network:
     driver: bridge
 
+volumes:
+  mysql_data:
+
   # Linux / Mac
 #sudo mkdir -p /opt/minio-data/business-system
 

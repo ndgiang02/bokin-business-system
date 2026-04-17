@@ -35,10 +35,12 @@ export const ROLE_BADGE_COLORS = {
 export const PERMISSIONS = {
   // Dashboard
   view_dashboard: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.TRUONG_PHONG_SX, ROLES.NHAN_VIEN_KINH_DOANH, ROLES.NHAN_VIEN_SAN_XUAT],
+  view_dashboard: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.TRUONG_PHONG_SX, ROLES.NHAN_VIEN_KINH_DOANH, ROLES.NHAN_VIEN_SAN_XUAT],
+
 
   // Yêu cầu (Requests)
   view_requests: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.NHAN_VIEN_KINH_DOANH, ROLES.NHAN_VIEN_SAN_XUAT, ROLES.TRUONG_PHONG_SX],
-  create_request: [ROLES.NHAN_VIEN_KINH_DOANH, ROLES.TRUONG_PHONG_KINH_DOANH],
+  create_request: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.TRUONG_PHONG_SX, ROLES.NHAN_VIEN_KINH_DOANH, ROLES.NHAN_VIEN_SAN_XUAT],
 
   // Phê duyệt (Approvals)
   view_approvals: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.TRUONG_PHONG_SX],
@@ -87,17 +89,15 @@ export const getMenuItems = (role) => {
       permission: 'view_requests',
       group: 'Kinh Doanh',
     },
-  
-    /*
+
     {
-      key: 'tasks',
-      label: 'Công Việc',
+      key: 'department',
+      label: 'Phòng Ban',
       icon: 'Kanban',
-      path: '/tasks',
-      permission: 'view_tasks',
-      group: 'Sản Xuất',
+      path: '/department',
+      permission: 'view_members',
+      group: 'Quản Lý',
     },
-    */
     {
       key: 'members',
       label: 'Thành Viên',
