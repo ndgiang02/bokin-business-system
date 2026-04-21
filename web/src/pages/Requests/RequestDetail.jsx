@@ -378,9 +378,9 @@ export default function RequestDetail({ selected, onClose }) {
 
   // ── Permissions ──────────────────────────────────────────
   const isCreator   = request.createdById === user?.id || request.created_by_id === user?.id;
-  const isTruongPhongKD   = user?.role === ROLES.TRUONG_PHONG_KINH_DOANH;
-  const isTruongPhong = user?.role === ROLES.TRUONG_PHONG_SX;
-  const isNhanVien  = user?.role === ROLES.NHAN_VIEN_SAN_XUAT;
+  const isTruongPhongKD   = user?.role === ROLES.TRUONG_PHONG;
+  const isTruongPhong = user?.role === ROLES.TRUONG_PHONG;
+  const isNhanVien  = user?.role === ROLES.NHAN_VIEN;
   const isAssigned  = request.assigned_to === user?.id;
 
   const canAssign   = isTruongPhong;
@@ -585,7 +585,7 @@ export default function RequestDetail({ selected, onClose }) {
                   </InfoCard>
 
                   <InfoCard label="Phòng tiếp nhận" icon={<Package size={10} />}>
-                    {request?.department_assigned_name || '—'}
+                    {request?.to_department_name || '—'}
                   </InfoCard>
 
                   <InfoCard label="Loại sản phẩm" icon={<Package size={10} />}>

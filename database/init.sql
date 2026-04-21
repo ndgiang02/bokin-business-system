@@ -50,12 +50,13 @@ CREATE TABLE requests (
 
     notes TEXT NULL,
 
-    status ENUM('pending','processing','done','revision','rejected','cancelled') DEFAULT 'pending',
+    status ENUM('pending','approved','processing','done','revision','rejected','cancelled') DEFAULT 'pending',
 
     created_by_id INT,
     assigned_to INT,
     resolved_to INT,
-    department_assigned INT,
+    to_department INT,
+    from_department INT,
 
     created_by_name VARCHAR(255),
 

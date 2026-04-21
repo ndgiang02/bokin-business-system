@@ -112,7 +112,6 @@ function DepartmentModal({ dept, open, onClose, onSaved }) {
   );
 }
 
-// ── Main Page ─────────────────────────────────────────────
 export default function DepartmentPage() {
   const [departments, setDepartments] = useState([]);
   const [loading,     setLoading]     = useState(true);
@@ -206,7 +205,7 @@ export default function DepartmentPage() {
               <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--text-secondary)' }}>
                   <Users size={14} color="var(--text-muted)" />
-                  <span><strong style={{ color: 'var(--text-primary)' }}>{dept._count?.users || 0}</strong> thành viên</span>
+                  <span><strong style={{ color: 'var(--text-primary)' }}>{dept.userCount || 0}</strong> thành viên</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--text-secondary)' }}>
                   <FileText size={14} color="var(--text-muted)" />

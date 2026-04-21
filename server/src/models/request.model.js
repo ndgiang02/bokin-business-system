@@ -47,7 +47,7 @@ export async function getAllRequests(filters = {}, pagination = {}) {
 
   const items = data.map(item => ({
     ...item,
-    department_assigned_name: item.department?.name || null,
+    to_department_name: item.department?.name || null,
   }));
 
   return { items, total, page, limit, totalPages: Math.ceil(total / limit) };
@@ -91,7 +91,7 @@ export async function createRequest(data, files = []) {
       status:       'pending',
       created_by_id:  data.createdById,
       created_by_name: data.createdByName || 'Nhân viên',
-      department_assigned: data.department_assigned ? parseInt(data.department_assigned, 10) : null,
+      to_department: data.to_department ? parseInt(data.to_department, 10) : null,
 
       // Files đính kèm
       files: {
@@ -151,7 +151,7 @@ export async function getRequests(filters = {}, pagination = {}) {
 
    const items = data.map(item => ({
     ...item,
-    department_assigned_name: item.department?.name || null,
+    to_department_name: item.department?.name || null,
   }));
 
   return { items, total, page, limit, totalPages: Math.ceil(total / limit) };
@@ -193,7 +193,7 @@ export async function getRequestById(id) {
   return {
     ...data,
 
-    department_assigned_name: data.department?.name || null,
+    to_department_name: data.department?.name || null,
   };
 }
 
@@ -254,4 +254,74 @@ export async function deleteRequest(id) {
     where:   { id: parseInt(id) },
     include: { files: true },
   });
+}
+
+export async function getRequestsHMM(filters = {}, pagination = {}) {
+  const {
+    status, priority, search,
+    createdById,
+    viewerRole,        // role của người đang xem
+    viewerDeptId,      // department_id của người đang xem
+  } = filters;
+
+  const { page = 1, limit = 20 } = pagination;
+  const skip = (page - 1) * limit;
+
+  let where = {};
+
+  if (viewerRole === 'super_admin') {
+    // Super admin thấy tất cả
+    where = {};
+
+  } else if (['truong_phong'].includes(viewerRole)) {
+    where = { fromDepartmentId: viewerDeptId };
+
+  } else if (['nhan_vien'].includes(viewerRole)) {
+    where = { createdById: parseInt(createdById) };
+
+  } else {
+    where = { createdById: parseInt(createdById) };
+  }
+
+  // Phòng được giao (toDepartmentId) chỉ thấy khi approved
+  // → thêm điều kiện OR: (fromDept = mình) OR (toDept = mình AND status = approved)
+  if (viewerDeptId && !['super_admin'].includes(viewerRole)) {
+    where = {
+      OR: [
+        { from_department: parseInt(viewerDeptId) },
+        {
+          to_department: parseInt(viewerDeptId),
+          status: { in: ['approved', 'in_progress', 'done', 'revision'] },
+        },
+      ],
+    };
+  }
+
+  if (status)   where.status   = status;
+  if (priority) where.priority = priority;
+  if (search) {
+    where.AND = [
+      ...(where.AND || []),
+      { OR: [{ code: { contains: search } }, { title: { contains: search } }] },
+    ];
+  }
+
+  const [total, data] = await Promise.all([
+    prisma.request.count({ where }),
+    prisma.request.findMany({
+      where, skip, take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        files:          { take: 1 },
+        createdBy:      { select: { id: true, name: true, role: true } },
+        from_department: { select: { id: true, name: true, code: true } },
+        to_department:   { select: { id: true, name: true, code: true } },
+        assignments: {
+          include: { user: { select: { id: true, name: true } } },
+        },
+      },
+    }),
+  ]);
+
+  return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
 }

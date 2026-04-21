@@ -2,10 +2,9 @@ USE workflow_db;
 
 INSERT INTO roles (role, name) VALUES
 ('super_admin', 'Admin' ),
-('truong_phong_kinh_doanh', 'Trưởng phòng kinh doanh'),
-('truong_phong_sx', 'Trưởng phòng sản xuất'),
-('nhan_vien_kinh_doanh', 'Nhân viên kinh doanh'),
-('nhan_vien_san_xuat', 'Nhân viên sản xuất');
+('truong_phong', 'Trưởng phòng '),
+('nhan_vien', 'Nhân viên');
+
 
 INSERT INTO departments (name, code) VALUES
     ('Super Admin', 'AD'),

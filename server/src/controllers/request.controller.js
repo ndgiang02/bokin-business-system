@@ -52,8 +52,18 @@ export async function getAllRequest(req, res, next) {
 export async function getRequestById(req, res, next) {
   try {
     const Id = req.query.Id;
-    console.log(Id);
     const data = await requestService.getRequestById(Id);
+    return response.success(res, data, "Lấy dữ liệu thành công", 200)
+  } catch (err) {
+    next(err);
+  }
+}
+
+
+export async function getRequestByDepartment(req, res, next) {
+  try {
+    const departmentId = req.params.id;
+    const data = await requestService.getRequestByDepartment(departmentId);
     return response.success(res, data, "Lấy dữ liệu thành công", 200)
   } catch (err) {
     next(err);

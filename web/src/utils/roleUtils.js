@@ -1,24 +1,19 @@
 // ===== ROLE DEFINITIONS =====
 export const ROLES = {
   SUPER_ADMIN: 'super_admin',
-  TRUONG_PHONG_KINH_DOANH: 'truong_phong_kinh_doanh',
-  TRUONG_PHONG_SX: 'truong_phong_sx',
-  NHAN_VIEN_KINH_DOANH: 'nhan_vien_kinh_doanh',
-  NHAN_VIEN_SAN_XUAT: 'nhan_vien_san_xuat',
+  TRUONG_PHONG: 'truong_phong',
+  NHAN_VIEN: 'nhan_vien',
 };
 
 export const ROLE_LABELS = {
   super_admin: 'Super Admin',
-  truong_phong_kinh_doanh: 'Trưởng Phòng Kinh Doanh',
-  truong_phong_sx: 'Trưởng Phòng Sản Xuất',
-  nhan_vien_kinh_doanh: 'Nhân Viên Kinh Doanh',
-  nhan_vien_san_xuat: 'Nhân Viên Sản Xuất',
+  truong_phong: 'Trưởng Phòng',
+  nhan_vien: 'Nhân Viên',
 };
 
 export const ROLE_COLORS = {
   super_admin: '#f59e0b',
   truong_phong_kinh_doanh: '#3b82f6',
-  truong_phong_sx: '#10b981',
   nhan_vien_kinh_doanh: '#8b5cf6',
   nhan_vien_san_xuat: '#06b6d4',
 };
@@ -34,31 +29,31 @@ export const ROLE_BADGE_COLORS = {
 // ===== PERMISSION MATRIX =====
 export const PERMISSIONS = {
   // Dashboard
-  view_dashboard: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.TRUONG_PHONG_SX, ROLES.NHAN_VIEN_KINH_DOANH, ROLES.NHAN_VIEN_SAN_XUAT],
-  view_dashboard: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.TRUONG_PHONG_SX, ROLES.NHAN_VIEN_KINH_DOANH, ROLES.NHAN_VIEN_SAN_XUAT],
+  view_dashboard: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG, ROLES.NHAN_VIEN],
+  view_dashboard: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG, ROLES.NHAN_VIEN],
 
 
   // Yêu cầu (Requests)
-  view_requests: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.NHAN_VIEN_KINH_DOANH, ROLES.NHAN_VIEN_SAN_XUAT, ROLES.TRUONG_PHONG_SX],
-  create_request: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.TRUONG_PHONG_SX, ROLES.NHAN_VIEN_KINH_DOANH, ROLES.NHAN_VIEN_SAN_XUAT],
+  view_requests: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG, ROLES.NHAN_VIEN],
+  create_request: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG, ROLES.NHAN_VIEN],
 
   // Phê duyệt (Approvals)
-  view_approvals: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.TRUONG_PHONG_SX],
+  view_approvals: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG,ROLES.NHAN_VIEN],
 
   // Công việc (Tasks)
-  view_tasks: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_SX, ROLES.NHAN_VIEN_SAN_XUAT, ROLES.TRUONG_PHONG_KINH_DOANH],
-  manage_tasks: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_SX],
+  view_tasks: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG, ROLES.NHAN_VIEN],
+  manage_tasks: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG],
 
   // Thành viên (Members)
-  view_members: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.TRUONG_PHONG_SX],
+  view_members: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG],
   manage_members: [ROLES.SUPER_ADMIN],
   edit_member: [ROLES.SUPER_ADMIN],
 
   // Báo cáo (Reports)
-  view_reports: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_KINH_DOANH, ROLES.TRUONG_PHONG_SX],
+  view_reports: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG],
 
   // Cài đặt (Settings)
-  view_settings: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG_SX, ROLES.NHAN_VIEN_SAN_XUAT, ROLES.TRUONG_PHONG_KINH_DOANH],
+  view_settings: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG, ROLES.NHAN_VIEN],
 };
 
 export const hasPermission = (role, permission) => {

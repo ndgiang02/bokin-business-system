@@ -33,6 +33,11 @@ export async function getRequestById(Id) {
   return request;
 }
 
+export async function getRequestByDepartment(departmentId) {
+  const requests = await requestModel.getRequestByDepartment(departmentId);
+  return requests;
+}
+
 
 export async function updateRequestStatus(id, status) {
   await getRequestById(id);

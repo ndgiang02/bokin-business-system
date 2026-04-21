@@ -260,7 +260,7 @@ export default function RequestList() {
                     <td style={{ padding: '13px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{r.created_by_name}</td>
                     {/*{userMap[r.assigned_to] || '—'}*/}
                     <td style={{ padding: '13px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>  {userMap[r.assigned_to] || '—'}</td>
-                    <td style={{ padding: '13px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>  {r.department_assigned_name || '—'}</td>
+                    <td style={{ padding: '13px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>  {r.to_department_name || '—'}</td>
                     <td style={{ padding: '13px 16px' }}>
                       <div style={{ display: 'flex', gap: 5 }}>
                         <button

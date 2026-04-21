@@ -156,7 +156,7 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
   const [form, setForm] = useState({
     code: '', productTypes: [], videoQuality: '',
     priority: '', deadline: null, quantity: 1,
-    splitByImage: false, notes: '', department_assigned: '',
+    splitByImage: false, notes: '', to_department: '',
   });
 
 const [departments, setDepartments] = useState([]);
@@ -177,7 +177,7 @@ const [departments, setDepartments] = useState([]);
 
   useEffect(() => {
     if (open) {
-      setForm({ code: generateCode(), productTypes: [], videoQuality: '', priority: '', deadline: '', quantity: 1, splitByImage: false, notes: '', department_assigned: '' });
+      setForm({ code: generateCode(), productTypes: [], videoQuality: '', priority: '', deadline: '', quantity: 1, splitByImage: false, notes: '', to_department: '' });
       setFiles([]); setErrors({}); setSaved(false); setSaving(false);
       setUploadPct(0); setUploadError('');
     }
@@ -230,7 +230,7 @@ const [departments, setDepartments] = useState([]);
     if (form.productTypes.length === 0)  e.productTypes = 'Chọn ít nhất 1 loại';
     if (!form.priority)                  e.priority     = 'Vui lòng chọn mức ưu tiên';
     if (!form.deadline)                  e.deadline     = 'Vui lòng chọn thời hạn';
-    if (!form.department_assigned)       e.department   = 'Vui lòng chọn phòng ban';
+    if (!form.to_department)       e.department   = 'Vui lòng chọn phòng ban';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -255,7 +255,7 @@ const [departments, setDepartments] = useState([]);
       else if (key === 'deadline') {
         fd.append(key, value ? value.toISOString() : '');
       } 
-      else if (key === 'department_assigned') {
+      else if (key === 'to_department') {
         fd.append(key, value ? Number(value) : '');
       }
       else {
@@ -423,8 +423,8 @@ const [departments, setDepartments] = useState([]);
                 <select
                   className="form-select"
                   style={{ maxWidth: 260 }}
-                  value={form.department_assigned}
-                  onChange={e => set('department_assigned', Number(e.target.value))}
+                  value={form.to_department}
+                  onChange={e => set('to_department', Number(e.target.value))}
                 >
                   <option value="">-- Chọn phòng ban --</option>
                   {departments.map(d => (

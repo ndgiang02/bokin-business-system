@@ -74,8 +74,9 @@ model Request {
   revisionHistories RevisionHistory[]
   assignments       RequestAssignment[]
   
-  department_assigned Int?
-  department Department? @relation(fields: [department_assigned], references: [id])
+  to_department Int?
+  from_department Int?
+  department Department? @relation(fields: [to_department], references: [id])
   created_at     DateTime @default(now())
   updated_at    DateTime @updatedAt
   

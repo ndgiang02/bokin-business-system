@@ -20,12 +20,12 @@ export const depApi = {
 
   // ── Cập nhật ──────────────────────────
   updateDepartment: (id, data) => {
-    return axiosClient.put(`/departments/${id}/update`, data);
+    return axiosClient.put(`/departments/update/${id}`, data);
   },
 
   // ── Xoá ───────────────────────────────
   deleteDepartment: (id) => {
-    return axiosClient.delete(`/departments/${id}/delete`);
+    return axiosClient.delete(`/departments/delete/${id}`);
   },
  
 }

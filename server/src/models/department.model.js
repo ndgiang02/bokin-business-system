@@ -2,9 +2,25 @@ const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 
+//exports.getAlldepartments = async () => {
+//  return await prisma.department.findMany();
+//}
+
 exports.getAlldepartments = async () => {
-  return await prisma.department.findMany();
-}
+  const data = await prisma.department.findMany({
+    include: {
+      _count: {
+        select: { users: true },
+      },
+    },
+  });
+
+  return data.map(d => ({
+    ...d,
+    userCount: d._count.users,
+    _count: undefined,
+  }));
+};
 
 exports.createDepartment = async (data) => {
   return await prisma.department.create({
@@ -15,20 +31,18 @@ exports.createDepartment = async (data) => {
   });
 };
 
-exports.updateDepartment = async (id, data) => {
-  return await prisma.department.update({
+exports.updateDepartment = (id, data) => {
+  return prisma.department.update({
     where: { id: parseInt(id) },
     data: {
-      ...(data.name && { name: data.name.trim() }),
-      ...(data.code !== undefined && {
-        code: data.code?.trim().toUpperCase() || null,
-      }),
+      ...(data.name && { name: data.name }),
+      ...(data.code !== undefined && { code: data.code }),
     },
   });
 };
 
-exports.deleteDepartment = async (id) => {
-  return await prisma.department.delete({
+exports.deleteDepartment = (id) => {
+  return prisma.department.delete({
     where: { id: parseInt(id) },
   });
 };
@@ -44,5 +58,11 @@ exports.codeExists = async (code, excludeId = null) => {
   if (excludeId && dept.id === parseInt(excludeId)) return false;
 
   return true;
+};
+
+exports.getDepartmentById = (id) => {
+  return prisma.department.findUnique({
+    where: { id: parseInt(id) },
+  });
 };
  
