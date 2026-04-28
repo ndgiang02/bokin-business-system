@@ -19,7 +19,7 @@ export default function AssignModal({ request, open, onClose, onAssigned }) {
 
   useEffect(() => {
     if (!open) return;
-    getUsersDepartment(user?.departmentId).then(r => { setUsers(r);});
+    getUsersDepartment(users?.departmentId).then(r => { setUsers(r);});
   }, [open, request]); 
 
   if (!open || !request) return null;
