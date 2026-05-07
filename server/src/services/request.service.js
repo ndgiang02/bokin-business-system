@@ -20,6 +20,7 @@ export async function getAllRequests(query) {
     priority:    query.priority,
     createdById: query.createdById,
     search:      query.search,
+    department:  query.department,
   };
   const pagination = {
     page:  parseInt(query.page)  || 1,
@@ -39,13 +40,7 @@ export async function getRequestByDepartment(departmentId) {
 }
 
 
-export async function updateRequestStatus(id, status) {
-  await getRequestById(id);
-  return requestModel.updateRequestStatus(id, status);
-}
 
-
-////hfdhfdfhdjfhdf
 // ── Đổi status ───────────────────────────────────────────
 export async function updateStatus(id, status) {
   await requestModel.getRequestById(id);
@@ -76,4 +71,29 @@ export async function deleteRequest(id) {
     await deleteMany(req.files.map(f => f.key));
   }
   return requestModel.deleteRequest(id);
+}
+
+
+
+export async function completeRequest(requestId, userId, notes, files) {
+   
+  /*
+  const request = await getRequestById(requestId);
+    if (!request) throw new AppError('Yêu cầu không tồn tại', 404);
+ 
+    if (request.assigned_to !== userId) {
+      throw new AppError('Bạn không có quyền hoàn thành yêu cầu này', 403);
+    }
+ 
+    if (request.status !== 'processing') {
+      throw new AppError(`Không thể hoàn thành yêu cầu ở trạng thái "${request.status}"`, 400);
+    } */
+ 
+    const uploadedFiles = files.length
+    ? await uploadMany(files,  `results`)
+    : [];
+ 
+    const updated = await requestModel.completeRequest(requestId, userId, notes, uploadedFiles);
+ 
+    return updated;
 }

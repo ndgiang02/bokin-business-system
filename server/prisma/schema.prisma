@@ -45,6 +45,7 @@ model Department {
   users User[]
   requests Request[]
 
+  counter DepartmentCounter?
   @@map("departments")
 }
 
@@ -61,7 +62,8 @@ model Request {
   quantity      Int      @default(1)
 
   split_by_image  Boolean  @default(false)
-  notes         String?
+  notes         String?   // note ban đầu
+  result_notes  String?   // note khi hoàn thành
 
   status        RequestStatus  @default(pending)
 
@@ -95,6 +97,8 @@ model RequestFile {
   size      Int
   mime_type  String   @db.VarChar(100)
   file_type  String   @db.VarChar(20)   // image|video|audio|document
+  category FileCategory  @default(input)
+  uploaded_by Int?
 
   created_at DateTime @default(now())
 
@@ -132,6 +136,16 @@ model RequestAssignment {
   @@map("request_assignments")
 }
 
+model DepartmentCounter {
+  department_id Int   @id
+  current_number Int  @default(0)
+  updated_at     DateTime @updatedAt
+
+  department Department @relation(fields: [department_id], references: [id], onDelete: Cascade)
+
+  @@map("department_counters")
+}
+
 enum RequestStatus {
   pending
   processing
@@ -140,4 +154,11 @@ enum RequestStatus {
   approved
   rejected
   cancelled
+}
+
+
+enum FileCategory {
+  input
+  output
+  revision
 }

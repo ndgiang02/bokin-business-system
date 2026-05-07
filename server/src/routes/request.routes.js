@@ -25,8 +25,6 @@ router.get("/get-all-requests",controller.getAllRequest);
 
 router.post('/create-request',   upload.array('files', 20), controller.create);
 
-//router.post("/create-request", auth, upload.array("images"), controller.createRequest);
-
 router.get("/get-request-byId",controller.getRequestById);
 
 
@@ -46,5 +44,7 @@ router.delete('/:id/assign/:userId',     controller.removeAssign);
  
 // Xóa
 router.delete('/:id', controller.deleteRequest);
+
+router.post('/:id/complete',  upload.array('files', 20), controller.completeRequest);
 
 module.exports = router;

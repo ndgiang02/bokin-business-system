@@ -49,12 +49,15 @@ CREATE TABLE requests (
     split_by_image BOOLEAN DEFAULT FALSE,
 
     notes TEXT NULL,
+    result_notes TEXT NULL,
 
     status ENUM('pending','approved','processing','done','revision','rejected','cancelled') DEFAULT 'pending',
 
     created_by_id INT,
     assigned_to INT,
+
     resolved_to INT,
+
     to_department INT,
     from_department INT,
 
@@ -77,27 +80,15 @@ CREATE TABLE request_files (
     mime_type VARCHAR(100),
     file_type VARCHAR(50),
 
+    uploaded_by INT,
+    
+    category ENUM('input', 'output', 'revision') DEFAULT 'input',
+
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (request_id) REFERENCES requests(id) ON DELETE CASCADE
-);
-
-CREATE TABLE tasks (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    request_id INT,
-    assigned_to INT,
-    status VARCHAR(50),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (request_id) REFERENCES requests(id),
-    FOREIGN KEY (assigned_to) REFERENCES users(id)
-);
-
-CREATE TABLE comments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    task_id INT,
-    user_id INT,
-    content TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    FOREIGN KEY (request_id) REFERENCES requests(id) ON DELETE CASCADE,
+    FOREIGN KEY (uploaded_by) REFERENCES users(id)
 );
 
 CREATE TABLE revision_histories (
@@ -140,4 +131,10 @@ CREATE TABLE request_assignments (
         REFERENCES users(id),
 
     CONSTRAINT unique_request_user UNIQUE (request_id, user_id)
+);
+
+CREATE TABLE department_counters (
+  department_id INT PRIMARY KEY,
+  current_number INT NOT NULL DEFAULT 0,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

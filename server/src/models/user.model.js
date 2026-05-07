@@ -18,6 +18,7 @@ exports.findByEmail = async (email) => {
       password: true,
       phone: true,
       created_at: true,
+      department_id: true,
       role: {
         select: { role: true }
       },
@@ -45,6 +46,7 @@ exports.getAllUsers = async () => {
       email: true,
       phone: true,
       created_at: true,
+      department_id: true,
       role: {
         select: { role: true }
       },

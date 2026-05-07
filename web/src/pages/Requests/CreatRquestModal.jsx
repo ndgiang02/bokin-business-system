@@ -154,7 +154,7 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
   };
 
   const [form, setForm] = useState({
-    code: '', productTypes: [], videoQuality: '',
+    productTypes: [], videoQuality: '',
     priority: '', deadline: null, quantity: 1,
     splitByImage: false, notes: '', to_department: '',
   });
@@ -226,7 +226,6 @@ const [departments, setDepartments] = useState([]);
 
   const validate = () => {
     const e = {};
-    if (!form.code.trim())               e.code         = 'Vui lòng nhập mã';
     if (form.productTypes.length === 0)  e.productTypes = 'Chọn ít nhất 1 loại';
     if (!form.priority)                  e.priority     = 'Vui lòng chọn mức ưu tiên';
     if (!form.deadline)                  e.deadline     = 'Vui lòng chọn thời hạn';
@@ -264,8 +263,10 @@ const [departments, setDepartments] = useState([]);
     });
 
     // createdBy
-    fd.append('createdById', user?.id || 1);
+    fd.append('createdById', user?.id || 0);
     fd.append('createdByName', user?.name || 'Nhân viên');
+    fd.append('from_department', user?.department_id ? Number(user.department_id) : 0);
+
 
     // append files
     if (files.length > 0) {
@@ -348,13 +349,14 @@ const [departments, setDepartments] = useState([]);
           ) : (
             <form id="create-request-form" onSubmit={handleSubmit}>
 
-              {/* Mã */}
+              {/* Mã 
               <FieldRow label="Mã" required>
                 <div>
                   <input className="form-input" style={{ maxWidth: 260 }} placeholder="VD: A488" value={form.code} onChange={e => set('code', e.target.value)} />
                   {errors.code && <div style={{ fontSize: 11, color: 'var(--danger)', marginTop: 4 }}>⚠ {errors.code}</div>}
                 </div>
               </FieldRow>
+              */}
 
               {/* Sản phẩm */}
               <FieldRow label="Sản phẩm yêu cầu" required>

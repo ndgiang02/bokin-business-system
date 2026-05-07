@@ -15,14 +15,20 @@ const STATUS_LABELS = {
   done:       'Đã xử lý',
   cancelled:  'Từ chối',
   assigned:   'Chờ phân công',
+  revision:   'Làm lại',
+  approved:   'Đã duyệt',
+  rejected:   'Đã từ chối',
 };
 
 const STATUS_PIE_MAP = {
-  done:        { name: 'Hoàn thành',     color: '#059669' },
-  processing:  { name: 'Đang xử lý',    color: '#2563eb' },
-  pending:     { name: 'Chờ duyệt',     color: '#d97706' },
-  assigned:    { name: 'Chờ phân công', color: '#0891b2' },
-  cancelled:   { name: 'Từ chối',       color: '#dc2626' },
+  pending:    { name: 'Chờ Duyệt',  color: '#f59e0b' },
+  processing: { name: 'Đang Xử Lý', color: '#3b82f6'},
+  done:       { name: 'Hoàn Thành', color: '#10b981'},
+  revision:   { name: 'Làm Lại',    color: '#f97316' },
+  approved:   { name: 'Đã Duyệt',   color: '#6366f1'},
+  rejected:   { name: 'Từ Chối',    color: '#ef4444'},
+  cancelled:  { name: 'Đã Huỷ',    color: '#6b7280'},
+  assigned:  { name: 'Chờ Phân Công', color: '#2563eb'},
 };
 
 function toPieData(rawStats = []) {

@@ -15,7 +15,7 @@ export const requestStore = create((set, get) => ({
       onProgress?.(pct);
     });
 
-    return res.data; // 👈 chỉ return data
+    return res.data; // chỉ return data
   } catch (err) {
     const message =
       err.response?.data?.error || err.message || 'Có lỗi xảy ra';
@@ -28,9 +28,11 @@ export const requestStore = create((set, get) => ({
 },
 
 
-  getAllRequets: async (filters = {}, pagination = { page: 1, limit: 20 }) => {
+  getAllRequets: async (filters, pagination = { page: 1, limit: 20 }) => {
     try {
       set({ isLoading: true });
+
+      console.log("Fetching requests with filters:", filters, "and pagination:", pagination); // ← thêm log
 
       const params = { ...filters, ...pagination };
       const res = await requestApi.getAllRequets(params);
@@ -69,6 +71,25 @@ export const requestStore = create((set, get) => ({
       return res;
     } catch (err) {
       return err;
+    }
+  },
+
+
+  completeRequest: async (requestId, formData, onProgress) => {
+    set({ loading: true, error: null });
+
+    try {
+      const res = await requestApi.completeRequest(requestId, formData, (pct) => {
+         set({ uploadPct: pct });
+          onProgress?.(pct);
+      });
+
+      return res;
+    } catch (err) {
+      const msg = err?.response?.data?.error || err?.message || 'Upload thất bại';
+
+      set({ loading: false, error: msg });
+      throw new Error(msg);
     }
   },
 

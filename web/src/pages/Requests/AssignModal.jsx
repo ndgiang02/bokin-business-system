@@ -70,7 +70,7 @@ export default function AssignModal({ request, open, onClose, onAssigned }) {
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15 }}>Gán Nhân Viên</div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{request.code} · Chọn nhân viên sản xuất</div>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{request.code} · Chọn nhân viên</div>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex' }}>
             <X size={18} />
@@ -131,9 +131,7 @@ export default function AssignModal({ request, open, onClose, onAssigned }) {
                   {/* Info */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--text-primary)' }}>{u.name}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 1 }}>
-                      {ROLE_LABELS[u.role] || u.role}
-                    </div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 1 }}>{ROLE_LABELS[u.role] || u.role}{u.department? ` - ${u.department}` : ''}</div>
                   </div>
 
                   {/* Checkbox */}

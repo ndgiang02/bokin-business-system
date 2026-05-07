@@ -45,7 +45,7 @@ export function checkSizeLimit(mimeType, size) {
   }
 }
 
-function generateKey(mimeType, folder = 'requests') {
+function generateKey(mimeType, folder) {
   const d   = new Date();
   const ext = mimeType.split('/')[1]
     ?.replace('vnd.openxmlformats-officedocument.wordprocessingml.document', 'docx')
@@ -58,7 +58,7 @@ function generateKey(mimeType, folder = 'requests') {
   return `${folder}/${date}/${uuid()}.${ext}`;
 }
 
-export async function uploadOne(file, folder = 'requests') {
+export async function uploadOne(file, folder) {
   const { buffer, originalname, mimetype, size } = file;
 
   // Validate
@@ -101,7 +101,7 @@ export async function uploadOne(file, folder = 'requests') {
 }
 
 // ── Upload nhiều file ─────────────────────────────────────
-export async function uploadMany(files, folder = 'requests') {
+export async function uploadMany(files, folder) {
   return Promise.all(files.map(f => uploadOne(f, folder)));
 }
 

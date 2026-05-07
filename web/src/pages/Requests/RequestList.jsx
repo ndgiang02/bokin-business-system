@@ -5,14 +5,14 @@ import CreateRequestModal from './CreatRquestModal.jsx';
 import { authStore } from '../../store/authStore.js';
 import { userStore } from '../../store/userStore.js';
 import { requestStore } from '../../store/requestStore.js';
-import { hasPermission } from '../../utils/roleUtils.js';
+import { hasPermission, ROLES } from '../../utils/roleUtils.js';
 import RequestDetail from './RequestDetail';
 
 const STATUS_MAP = {
-  pending:     { label: 'Chờ Duyệt',    class: 'badge-pending' },
-  assigned:    { label: 'Chờ Phân Công',    class: 'badge-assigned' },
-  done:    { label: 'Đã xử lý',     class: 'badge-approved' },
-  cancelled:    { label: 'Từ Chối',       class: 'badge-rejected' },
+  pending:    { label: 'Chờ Duyệt',    class: 'badge-pending' },
+  assigned:   { label: 'Chờ Phân Công', class: 'badge-assigned' },
+  done:       { label: 'Đã xử lý',      class: 'badge-approved' },
+  cancelled:  { label: 'Từ Chối',       class: 'badge-rejected' },
   processing: { label: 'Đang Xử Lý',   class: 'badge-in_progress' },
 };
 const PRIORITY_MAP = {
@@ -21,9 +21,7 @@ const PRIORITY_MAP = {
   low:    { label: 'Thấp',       class: 'badge-low' },
 };
 
-
 export default function RequestList() {
-    
   const [requests, setRequests]   = useState([]);
   const [filtered, setFiltered]   = useState([]);
   const [search, setSearch]       = useState('');
@@ -34,27 +32,26 @@ export default function RequestList() {
   const [loading, setLoading]     = useState(true);
   const [selected, setSelected]   = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [users, setUsers] = useState([]);
-  
-  const { user } = authStore();
-  const { getAllRequets } = requestStore();
-  const { getAllUser } = userStore();
+  const [users, setUsers]         = useState([]);
 
-  const navigate = useNavigate();
+  const { user }          = authStore();
+  const { getAllRequets }  = requestStore();
+  const { getAllUser }     = userStore();
+
+  const navigate  = useNavigate();
   const canCreate = hasPermission(user?.role, 'create_request');
 
-
+  // ── Fetch list ──────────────────────────────────────────
   const fetchRequests = () => {
     const filters = {
-      status: statusFilter !== 'all' ? statusFilter : undefined,
+      status:   statusFilter !== 'all' ? statusFilter : undefined,
       priority: priorityFilter !== 'all' ? priorityFilter : undefined,
-      search: search || undefined,
+      search:   search || undefined,
+      department: user?.role === ROLES.SUPER_ADMIN ? undefined : user?.department_id,    
     };
-
     const pagination = { page: 1, limit: 20 };
 
     setLoading(true);
-
     getAllRequets(filters, pagination)
       .then(res => {
         const data = res?.data?.data?.items || [];
@@ -63,44 +60,49 @@ export default function RequestList() {
       .finally(() => setLoading(false));
   };
 
+  useEffect(() => {
+    getAllUser().then(r => { setUsers(r); });
+  }, []);
 
   useEffect(() => {
-    getAllUser().then(r => { setUsers(r);});
-  }, []);  
-
-  useEffect(() => {
-   fetchRequests();
+    fetchRequests();
   }, [search, statusFilter, priorityFilter]);
 
-  const userMap = useMemo(() => {
-    return Object.fromEntries(users?.map(u => [u.id, u.name]));
-  }, [users]);
+  const userMap = useMemo(
+    () => Object.fromEntries(users?.map(u => [u.id, u.name])),
+    [users],
+  );
 
   useEffect(() => {
     let res = [...requests];
-
-    if (sortBy === 'newest') res.sort((a, b) => b.id - a.id);
-    if (sortBy === 'amount') res.sort((a, b) => b.amount - a.amount);
+    if (sortBy === 'newest')  res.sort((a, b) => b.id - a.id);
+    if (sortBy === 'amount')  res.sort((a, b) => b.amount - a.amount);
     if (sortBy === 'deadline') res.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
-
     setFiltered(res);
   }, [sortBy, requests]);
 
+  // ── Stat cards ──────────────────────────────────────────
   const statCards = [
-    { label: 'Tất cả',       count: requests.length,                                   color: 'var(--text-secondary)', key: 'all' },
-    { label: 'Chờ phân công',    count: requests.filter(r => r.status === 'pending').length,     color: 'var(--warning)',       key: 'pending' },
-    { label: 'Đang xử lý',   count: requests.filter(r => r.status === 'processing').length, color: 'var(--info)',          key: 'processing' },
-    { label: 'Đã xử lý',     count: requests.filter(r => r.status === 'done').length,    color: 'var(--success)',       key: 'done' },
-    { label: 'Hủy',       count: requests.filter(r => r.status === 'cancelled').length,   color: 'var(--danger)',        key: 'cancelled' },
+    { label: 'Tất cả',        count: requests.length,                                       color: 'var(--text-secondary)', key: 'all' },
+    { label: 'Chờ phân công', count: requests.filter(r => r.status === 'pending').length,    color: 'var(--warning)',        key: 'pending' },
+    { label: 'Đang xử lý',   count: requests.filter(r => r.status === 'processing').length, color: 'var(--info)',           key: 'processing' },
+    { label: 'Đã xử lý',     count: requests.filter(r => r.status === 'done').length,       color: 'var(--success)',        key: 'done' },
+    { label: 'Hủy',          count: requests.filter(r => r.status === 'cancelled').length,  color: 'var(--danger)',         key: 'cancelled' },
   ];
+
+  // ── Đóng detail và refresh list ─────────────────────────
+  const handleCloseDetail = () => {
+    setSelected(null);
+    fetchRequests();
+  };
 
   return (
     <div className="animate-fade-in">
+
       {/* Page header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h1 className="page-title">Yêu Cầu</h1>
-          {/*<p className="page-subtitle">Quản lý và theo dõi yêu cầu từ khách hàng</p>*/}
         </div>
         {canCreate && (
           <button className="btn btn-primary" onClick={() => setShowModal(true)}>
@@ -109,7 +111,7 @@ export default function RequestList() {
         )}
       </div>
 
-      {/* Stat cards — clickable filter */}
+      {/* Stat cards */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
         {statCards.map(s => (
           <div
@@ -184,7 +186,7 @@ export default function RequestList() {
                   background: statusFilter === s ? 'var(--accent-dim)' : 'transparent',
                   color: statusFilter === s ? 'var(--accent)' : 'var(--text-muted)',
                 }}>
-                  {s === 'all' ? 'Tất cả' : STATUS_MAP[s].label}
+                  {s === 'all' ? 'Tất cả' : STATUS_MAP[s]?.label}
                 </button>
               ))}
             </div>
@@ -200,7 +202,7 @@ export default function RequestList() {
                   background: priorityFilter === p ? 'var(--accent-dim)' : 'transparent',
                   color: priorityFilter === p ? 'var(--accent)' : 'var(--text-muted)',
                 }}>
-                  {p === 'all' ? 'Tất cả' : PRIORITY_MAP[p].label}
+                  {p === 'all' ? 'Tất cả' : PRIORITY_MAP[p]?.label}
                 </button>
               ))}
             </div>
@@ -228,7 +230,7 @@ export default function RequestList() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
                 <tr>
-                  {['Mã YC', 'Ngày Tạo', 'Ưu Tiên', 'Trạng Thái', 'Hạn bàn giao', 'Người Tạo','Người thực hiện', 'Bộ phận tiếp nhận'].map(col => (
+                  {['Mã YC', 'Ngày Tạo', 'Ưu Tiên', 'Trạng Thái', 'Hạn bàn giao', 'Người Tạo', 'Người thực hiện', 'Bộ phận tiếp nhận', ''].map(col => (
                     <th key={col} style={{
                       padding: '10px 16px', textAlign: 'left', fontSize: 10,
                       fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase',
@@ -249,31 +251,38 @@ export default function RequestList() {
                     <td style={{ padding: '13px 16px' }}>
                       <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--accent)', fontWeight: 600 }}>{r.code}</span>
                     </td>
-                    <td style={{ padding: '13px 16px', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{new Date(r.created_at).toLocaleDateString('vi-VN')}</td>
+                    <td style={{ padding: '13px 16px', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                      {new Date(r.created_at).toLocaleDateString('vi-VN')}
+                    </td>
                     <td style={{ padding: '13px 16px' }}>
                       <span className={`badge ${PRIORITY_MAP[r.priority]?.class}`}>{PRIORITY_MAP[r.priority]?.label}</span>
                     </td>
-                      <td style={{ padding: '13px 16px' }}>
+                    <td style={{ padding: '13px 16px' }}>
                       <span className={`badge ${STATUS_MAP[r.status]?.class}`}>{STATUS_MAP[r.status]?.label}</span>
                     </td>
-                    <td style={{ padding: '13px 16px', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{new Date(r.deadline).toLocaleDateString('vi-VN')}</td>
+                    <td style={{ padding: '13px 16px', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                      {new Date(r.deadline).toLocaleDateString('vi-VN')}
+                    </td>
                     <td style={{ padding: '13px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{r.created_by_name}</td>
-                    {/*{userMap[r.assigned_to] || '—'}*/}
-                    <td style={{ padding: '13px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>  {userMap[r.assigned_to] || '—'}</td>
-                    <td style={{ padding: '13px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>  {r.to_department_name || '—'}</td>
+                    <td style={{ padding: '13px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{userMap[r.assigned_to] || '—'}</td>
+                    <td style={{ padding: '13px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{r.to_department_name || '—'}</td>
                     <td style={{ padding: '13px 16px' }}>
                       <div style={{ display: 'flex', gap: 5 }}>
                         <button
                           className="btn btn-outline btn-sm btn-icon"
                           title="Xem chi tiết"
                           onClick={() => setSelected(r.id)}
-                        ><Eye size={13} /></button>
+                        >
+                          <Eye size={13} />
+                        </button>
                         {canCreate && (
                           <button
                             className="btn btn-danger btn-sm btn-icon"
                             title="Xóa"
                             onClick={() => setRequests(prev => prev.filter(x => x.id !== r.id))}
-                          ><Trash2 size={13} /></button>
+                          >
+                            <Trash2 size={13} />
+                          </button>
                         )}
                       </div>
                     </td>
@@ -289,20 +298,17 @@ export default function RequestList() {
       <CreateRequestModal
         open={showModal}
         onClose={() => setShowModal(false)}
-        onCreated={() => { fetchRequests()   }}
+        onCreated={() => { fetchRequests(); }}
       />
 
-      {/* Detail modal */}
-       {selected && (
+      {selected && (
         <RequestDetail
           selected={selected}
-          onClose={() => {setSelected(null); fetchRequests();}}
+          onClose={handleCloseDetail}
           PRIORITY_MAP={PRIORITY_MAP}
           STATUS_MAP={STATUS_MAP}
         />
       )}
-    
-    
     </div>
   );
 }

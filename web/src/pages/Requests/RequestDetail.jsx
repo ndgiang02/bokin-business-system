@@ -7,11 +7,13 @@ import {
 } from 'lucide-react';
 import { hasPermission } from '../../utils/roleUtils.js';
 import RevisionModal from './RevisionModal.jsx';
+import CompleteRequestModal from './CompleteRequestModal.jsx';
 import AssignModal   from './AssignModal.jsx';
 import { requestStore } from '../../store/requestStore';
 import { authStore }     from '../../store/authStore.js';
 import { ROLES }         from '../../utils/roleUtils.js';
 import './css/request-detail.css';
+import { toast } from '../../shared/toast/useToast.js';
 
 // ── Helpers ────────────────────────────────────────────────
 function fixUrl(url) {
@@ -19,14 +21,24 @@ function fixUrl(url) {
   return url.replace('http://minio:9000', 'http://localhost:9000');
 }
 
+const BASE_URL = import.meta.env.VITE_FILE_BASE_URL;
+
+function getFileUrl(fileKey) {
+
+  console.log('BASE_URL:', BASE_URL);
+  const url = `${BASE_URL.replace(/\/$/, '')}/${fileKey}`;
+  return url;
+}
+
+
 const STATUS_CONFIG = {
-  pending:     { label: 'Chờ Duyệt',  color: '#f59e0b', bg: 'rgba(245,158,11,0.12)',  dot: '#f59e0b' },
+  pending:    { label: 'Chờ Duyệt',  color: '#f59e0b', bg: 'rgba(245,158,11,0.12)',  dot: '#f59e0b' },
   processing: { label: 'Đang Xử Lý', color: '#3b82f6', bg: 'rgba(59,130,246,0.12)',  dot: '#3b82f6' },
-  done:        { label: 'Hoàn Thành', color: '#10b981', bg: 'rgba(16,185,129,0.12)',   dot: '#10b981' },
-  revision:    { label: 'Làm Lại',    color: '#f97316', bg: 'rgba(249,115,22,0.12)',   dot: '#f97316' },
-  approved:    { label: 'Đã Duyệt',   color: '#6366f1', bg: 'rgba(99,102,241,0.12)',   dot: '#6366f1' },
-  rejected:    { label: 'Từ Chối',    color: '#ef4444', bg: 'rgba(239,68,68,0.12)',    dot: '#ef4444' },
-  cancelled:   { label: 'Đã Huỷ',    color: '#6b7280', bg: 'rgba(107,114,128,0.12)',  dot: '#6b7280' },
+  done:       { label: 'Hoàn Thành', color: '#10b981', bg: 'rgba(16,185,129,0.12)',   dot: '#10b981' },
+  revision:   { label: 'Làm Lại',    color: '#f97316', bg: 'rgba(249,115,22,0.12)',   dot: '#f97316' },
+  approved:   { label: 'Đã Duyệt',   color: '#6366f1', bg: 'rgba(99,102,241,0.12)',   dot: '#6366f1' },
+  rejected:   { label: 'Từ Chối',    color: '#ef4444', bg: 'rgba(239,68,68,0.12)',    dot: '#ef4444' },
+  cancelled:  { label: 'Đã Huỷ',    color: '#6b7280', bg: 'rgba(107,114,128,0.12)',  dot: '#6b7280' },
 };
 
 const PRIORITY_CONFIG = {
@@ -156,7 +168,7 @@ function ConfirmDialog({ open, onClose, onConfirm, title, message, confirmLabel,
 // ── File Preview ──────────────────────────────────────────
 function FilePreview({ file }) {
   const [zoom, setZoom] = useState(false);
-  const url   = fixUrl(file.url);
+  const url   = getFileUrl(file.file_key);
   const isImg = file.fileType === 'image' || file.mimeType?.startsWith('image/');
 
   return (
@@ -193,18 +205,6 @@ function FilePreview({ file }) {
             </span>
           </>
         )}
-        <div style={{
-          position: 'absolute', inset: 0, background: 'rgba(0,0,0,0)',
-          transition: 'background 0.2s',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.35)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0)'; }}
-        >
-          <Eye size={16} color="#fff" style={{ opacity: 0, transition: 'opacity 0.2s' }}
-            onMouseEnter={e => { e.currentTarget.style.opacity = 1; }}
-          />
-        </div>
       </div>
 
       {zoom && (
@@ -248,10 +248,7 @@ function FilePreview({ file }) {
 // ── Section Header ────────────────────────────────────────
 function SectionHeader({ icon, title, count }) {
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: 8,
-      marginBottom: 12,
-    }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
       <div style={{
         width: 28, height: 28, borderRadius: 8,
         background: 'var(--accent-dim, rgba(99,102,241,0.12))',
@@ -260,9 +257,7 @@ function SectionHeader({ icon, title, count }) {
       }}>
         {icon}
       </div>
-      <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary, #fff)' }}>
-        {title}
-      </span>
+      <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary, #fff)' }}>{title}</span>
       {count != null && (
         <span style={{
           fontSize: 11, fontWeight: 700,
@@ -336,26 +331,26 @@ function ActionButton({ icon, label, onClick, color, outline, disabled, isLoadin
 
 // ── Main Component ────────────────────────────────────────
 export default function RequestDetail({ selected, onClose }) {
-  const [request,      setRequest]      = useState(null);
-  const [showRevision, setShowRevision] = useState(false);
-  const [showAssign,   setShowAssign]   = useState(false);
-  const [confirm,      setConfirm]      = useState(null); // { type: 'complete' | 'cancel' | 'approve' | 'reject' }
+  const [request,       setRequest]       = useState(null);
+  const [showRevision,  setShowRevision]  = useState(false);
+  const [showAssign,    setShowAssign]    = useState(false);
+  const [showComplete,  setShowComplete]  = useState(false);   // ← kiểm soát CompleteRequestModal
+  const [confirm,       setConfirm]       = useState(null);    // 'complete' | 'cancel' | 'approve' | 'reject'
   const [actionLoading, setActionLoading] = useState(false);
-  const [activeTab,    setActiveTab]    = useState('info'); // 'info' | 'files' | 'history'
+  const [activeTab,     setActiveTab]     = useState('info');  // 'info' | 'files' | 'history'
 
-  const { getRequestById, updateStatus } = requestStore();
+  const { getRequestById, updateStatus, completeRequest } = requestStore();
   const { user } = authStore();
-  const [updating, setUpdating] = useState(false);
 
+  // ── Fetch request ─────────────────────────────────────────
+  const fetchRequest = async () => {
+    const d = await getRequestById(selected);
+    setRequest(d?.data || d);
+  };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const d = await getRequestById(selected);
-      setRequest(d?.data || d);
-    };
-    fetchData();
-  }, [selected]);
+  useEffect(() => { fetchRequest(); }, [selected]);
 
+  // ── Loading state ─────────────────────────────────────────
   if (request == null) {
     return (
       <div className="rd-backdrop" onClick={onClose}>
@@ -376,21 +371,22 @@ export default function RequestDetail({ selected, onClose }) {
     );
   }
 
-  // ── Permissions ──────────────────────────────────────────
-  const isCreator   = request.createdById === user?.id || request.created_by_id === user?.id;
-  const isTruongPhongKD   = user?.role === ROLES.TRUONG_PHONG;
-  const isTruongPhong = user?.role === ROLES.TRUONG_PHONG;
-  const isNhanVien  = user?.role === ROLES.NHAN_VIEN;
-  const isAssigned  = request.assigned_to === user?.id;
+  // ── Permissions ───────────────────────────────────────────
+  const isCreator        = request.createdById === user?.id || request.created_by_id === user?.id;
+  const isTruongPhongKD  = user?.role === ROLES.TRUONG_PHONG;
+  const isTruongPhong    = user?.role === ROLES.TRUONG_PHONG;
+  const isTruongPhongGan    = user?.role === ROLES.TRUONG_PHONG && user?.department_id === request.to_department;
 
-  const canAssign   = isTruongPhong;
+  const isAssigned       = request.assigned_to === user?.id;
+
+  const canAssign   = request.status === 'processing' && isTruongPhongGan;
   const canRevision = request.status === 'done' && isTruongPhongKD;
-  const canComplete = isAssigned && request.status === 'processing';
+  const canComplete = isAssigned && (request.status === 'processing' || request.status === 'revision');
   const canCancel   = (isCreator || isTruongPhong) && ['pending', 'processing'].includes(request.status);
-  const canApprove  = isTruongPhong && request.status === 'done';
+  const canApprove  = isTruongPhong && request.status === 'pending';
   const canReject   = isTruongPhong && request.status === 'done';
 
-  // ── Helpers ──────────────────────────────────────────────
+  // ── Helpers ───────────────────────────────────────────────
   const hasFiles     = request.files?.length > 0;
   const hasHistory   = request.revisionHistories?.length > 0;
   const hasAssignees = request.assignments?.length > 0;
@@ -398,49 +394,50 @@ export default function RequestDetail({ selected, onClose }) {
   const tabCount = {
     files:   request.files?.length ?? 0,
     history: request.revisionHistories?.length ?? 0,
+    result:  request.files?.filter(f => f.category === 'output').length ?? 0,
   };
 
-  // ── Actions ──────────────────────────────────────────────
+
+  //cancel / approve / reject
   const handleAction = async (type) => {
     setActionLoading(true);
     try {
       const statusMap = {
-        complete: 'done',
-        cancel:   'cancelled',
-        approve:  'approved',
-        reject:   'rejected',
+        cancel:  'cancelled',
+        approve: 'processing',
+        reject:  'rejected',
       };
       await updateStatus?.(request.id, statusMap[type]);
-      const d = await getRequestById(selected);
-      setRequest(d?.data || d);
+      await fetchRequest(); 
+      toast.success('Cập nhật thành công');
     } catch (err) {
-      console.error(err);
+      toast.error(err?.response?.data?.error || err?.message || 'Có lỗi xảy ra');
     } finally {
       setActionLoading(false);
       setConfirm(null);
     }
   };
 
-  const handleUpdateStatus = async (status) => {
-    setUpdating(true);
-    try {
-      await updateStatus(request.id, status);
-      onClose();
-    } catch (err) {
-      alert(err.response?.data?.error || err.message);
-    } finally {
-      setUpdating(false);
+  /**
+   * Được gọi từ CompleteRequestModal khi user bấm "Xác nhận hoàn thành".
+   * Nhận FormData (status, notes, files) → gọi API → refresh detail.
+   *
+   * @param {FormData} formData
+   * @param {(pct: number) => void} onProgress  – callback tiến trình upload (tuỳ chọn)
+   */
+  const handleCompleted = async (formData, onProgress) => {
+    // completeRequest nên hỗ trợ FormData và onProgress
+    // Nếu store chưa có hàm này, fallback về updateStatus
+    if (typeof completeRequest === 'function') {
+      await completeRequest(request.id, formData, onProgress);
+    } else {
+      await updateStatus(request.id, 'done');
     }
+    await fetchRequest();            // refresh lại detail sau khi hoàn thành
+    toast.success('Yêu cầu đã được đánh dấu hoàn thành');
   };
 
   const CONFIRM_CONFIG = {
-    complete: {
-      title: 'Hoàn thành yêu cầu?',
-      message: 'Xác nhận đánh dấu yêu cầu này là đã hoàn thành. Người tạo sẽ được thông báo để kiểm tra.',
-      confirmLabel: 'Hoàn thành',
-      confirmColor: '#10b981',
-      icon: <CheckCircle size={24} color="#10b981" />,
-    },
     cancel: {
       title: 'Huỷ yêu cầu?',
       message: 'Yêu cầu sẽ bị huỷ và không thể khôi phục. Bạn chắc chắn muốn tiếp tục?',
@@ -464,9 +461,6 @@ export default function RequestDetail({ selected, onClose }) {
     },
   };
 
-  const statusCfg   = STATUS_CONFIG[request.status]   || {};
-  const priorityCfg = PRIORITY_CONFIG[request.priority] || {};
-
   return (
     <>
       <div className="rd-backdrop" onClick={onClose}>
@@ -476,7 +470,7 @@ export default function RequestDetail({ selected, onClose }) {
           style={{ display: 'flex', flexDirection: 'column', maxHeight: '90vh', padding: 0, overflow: 'hidden' }}
         >
 
-          {/* ══ HEADER ══════════════════════════════════════ */}
+          {/* ══ HEADER ════════════════════════════════════ */}
           <div style={{
             padding: '18px 20px 14px',
             borderBottom: '1px solid var(--border, #2d2d3d)',
@@ -486,7 +480,6 @@ export default function RequestDetail({ selected, onClose }) {
             {/* Top row */}
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
               <div style={{ flex: 1, minWidth: 0 }}>
-                {/* Code + Priority */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
                   <span style={{
                     fontSize: 18, fontWeight: 800, color: 'var(--text-primary, #fff)',
@@ -496,7 +489,6 @@ export default function RequestDetail({ selected, onClose }) {
                   </span>
                   <PriorityBadge priority={request.priority} />
                 </div>
-                {/* Status row */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <StatusBadge status={request.status} />
                   <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
@@ -524,8 +516,9 @@ export default function RequestDetail({ selected, onClose }) {
             <div style={{ display: 'flex', gap: 4 }}>
               {[
                 { key: 'info',    label: 'Thông tin',    icon: <Info size={12} /> },
-                { key: 'files',   label: `Tệp đính kèm`, icon: <Paperclip size={12} />, count: tabCount.files },
+                { key: 'files',   label: 'Tệp đính kèm', icon: <Paperclip size={12} />, count: tabCount.files },
                 { key: 'history', label: 'Lịch sử',      icon: <History size={12} />,   count: tabCount.history },
+                { key: 'result',  label: 'Kết quả',      icon: <CheckCircle size={12} />, count: tabCount.result },
               ].map(tab => (
                 <button
                   key={tab.key}
@@ -535,12 +528,8 @@ export default function RequestDetail({ selected, onClose }) {
                     padding: '5px 12px', borderRadius: 8,
                     border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600,
                     transition: 'all 0.18s',
-                    background: activeTab === tab.key
-                      ? 'rgba(99,102,241,0.15)'
-                      : 'transparent',
-                    color: activeTab === tab.key
-                      ? 'var(--accent, #6366f1)'
-                      : 'var(--text-muted, #888)',
+                    background: activeTab === tab.key ? 'rgba(99,102,241,0.15)' : 'transparent',
+                    color: activeTab === tab.key ? 'var(--accent, #6366f1)' : 'var(--text-muted, #888)',
                     borderBottom: activeTab === tab.key ? '2px solid var(--accent, #6366f1)' : '2px solid transparent',
                   }}
                 >
@@ -561,14 +550,12 @@ export default function RequestDetail({ selected, onClose }) {
             </div>
           </div>
 
-          {/* ══ BODY ════════════════════════════════════════ */}
+          {/* ══ BODY ══════════════════════════════════════ */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '18px 20px' }}>
 
-            {/* ── TAB: INFO ─────────────────────────────── */}
+            {/* ── TAB: INFO ──────────────────────────── */}
             {activeTab === 'info' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-
-                {/* Info grid */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                   <InfoCard label="Người tạo" icon={<User size={10} />}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
@@ -607,15 +594,13 @@ export default function RequestDetail({ selected, onClose }) {
                   <InfoCard label="Deadline" icon={<Calendar size={10} />}>
                     {request?.deadline
                       ? (() => {
-                          const d = new Date(request.deadline);
-                          const now = new Date();
-                          const diff = d - now;
+                          const d    = new Date(request.deadline);
+                          const diff = d - new Date();
                           const days = Math.ceil(diff / 86400000);
-                          const isOverdue = diff < 0;
                           return (
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                               <span>{d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
-                              {isOverdue
+                              {diff < 0
                                 ? <span style={{ fontSize: 10, color: '#ef4444', fontWeight: 700 }}>Quá hạn</span>
                                 : days <= 3
                                 ? <span style={{ fontSize: 10, color: '#f59e0b', fontWeight: 700 }}>Còn {days} ngày</span>
@@ -627,13 +612,10 @@ export default function RequestDetail({ selected, onClose }) {
                   </InfoCard>
 
                   <InfoCard label="Ngày tạo" icon={<Clock size={10} />}>
-                    {request?.created_at
-                      ? new Date(request.created_at).toLocaleString('vi-VN')
-                      : '—'}
+                    {request?.created_at ? new Date(request.created_at).toLocaleString('vi-VN') : '—'}
                   </InfoCard>
                 </div>
 
-                {/* Notes */}
                 {request.notes && (
                   <div style={{
                     background: 'rgba(245,158,11,0.06)',
@@ -645,19 +627,16 @@ export default function RequestDetail({ selected, onClose }) {
                       <FileText size={12} color="#f59e0b" />
                       <span style={{ fontSize: 11, fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Ghi chú</span>
                     </div>
-                    <div  style={{
-                          fontSize: 13,
-                          color: 'var(--text-secondary)',
-                          lineHeight: 1.6,
-                          wordBreak: 'break-word',    
-                          overflowWrap: 'break-word',   
-                          whiteSpace: 'pre-wrap'       
-                        }}>
-                          {request.notes}</div>
+                    <div style={{
+                      fontSize: 13, color: 'var(--text-secondary)',
+                      lineHeight: 1.6, wordBreak: 'break-word',
+                      overflowWrap: 'break-word', whiteSpace: 'pre-wrap',
+                    }}>
+                      {request.notes}
+                    </div>
                   </div>
                 )}
 
-                {/* Assignees */}
                 {hasAssignees && (
                   <div>
                     <SectionHeader icon={<UserCheck size={14} />} title="Nhân viên được gán" count={request.assignments.length} />
@@ -666,8 +645,7 @@ export default function RequestDetail({ selected, onClose }) {
                         <div key={a.id} style={{
                           display: 'flex', alignItems: 'center', gap: 7,
                           padding: '6px 12px',
-                          background: 'var(--bg-input)',
-                          border: '1px solid var(--border)',
+                          background: 'var(--bg-input)', border: '1px solid var(--border)',
                           borderRadius: 20, fontSize: 12, fontWeight: 500,
                           color: 'var(--text-secondary)',
                         }}>
@@ -691,7 +669,7 @@ export default function RequestDetail({ selected, onClose }) {
               </div>
             )}
 
-            {/* ── TAB: FILES ───────────────────────────── */}
+            {/* ── TAB: FILES ─────────────────────────── */}
             {activeTab === 'files' && (
               <div>
                 {hasFiles ? (
@@ -707,54 +685,48 @@ export default function RequestDetail({ selected, onClose }) {
               </div>
             )}
 
-            {/* ── TAB: HISTORY ─────────────────────────── */}
+            {/* ── TAB: HISTORY ──────────────────────── */}
             {activeTab === 'history' && (
               <div>
                 {hasHistory ? (
-                  <div style={{ 
-                      display: 'flex', 
-                      flexDirection: 'column', 
-                      gap: 10, 
-                      maxHeight: 300,  // chiều cao tối đa, bạn có thể tùy chỉnh
-                      overflowY: 'auto',
-                      paddingRight: 6 // tránh bị che scroll
-                    }}>
-                      {[...request.revisionHistories]
-                        .sort((a, b) => new Date(b.createdAt || b.created_at) - new Date(a.createdAt || a.created_at))
-                        .map((r, idx, arr) => (
-                          <div key={r.id} style={{
-                            background: 'rgba(249,115,22,0.06)',
-                            border: '1px solid rgba(249,115,22,0.2)',
-                            borderRadius: 10, 
-                            padding: '12px 14px',
-                            borderLeft: '3px solid #f97316',
-                            position: 'relative',
-                          }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                              <span style={{
-                            fontSize: 11, fontWeight: 800, color: '#f97316',
-                            fontFamily: 'var(--font-mono)',
-                            background: 'rgba(249,115,22,0.12)',
-                            padding: '2px 8px', borderRadius: 6,
-                          }}>
-                            {arr.length - idx}
-                          </span>
-                          <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                            {formatDate(r.createdAt || r.created_at)}
-                          </span>
+                  <div style={{
+                    display: 'flex', flexDirection: 'column', gap: 10,
+                    maxHeight: 300, overflowY: 'auto', paddingRight: 6,
+                  }}>
+                    {[...request.revisionHistories]
+                      .sort((a, b) => new Date(b.createdAt || b.created_at) - new Date(a.createdAt || a.created_at))
+                      .map((r, idx, arr) => (
+                        <div key={r.id} style={{
+                          background: 'rgba(249,115,22,0.06)',
+                          border: '1px solid rgba(249,115,22,0.2)',
+                          borderRadius: 10, padding: '12px 14px',
+                          borderLeft: '3px solid #f97316',
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{
+                                fontSize: 11, fontWeight: 800, color: '#f97316',
+                                fontFamily: 'var(--font-mono)',
+                                background: 'rgba(249,115,22,0.12)',
+                                padding: '2px 8px', borderRadius: 6,
+                              }}>
+                                {arr.length - idx}
+                              </span>
+                              <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                                {formatDate(r.createdAt || r.created_at)}
+                              </span>
+                            </div>
+                          </div>
+                          <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 6 }}>
+                            {r.comment}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text-muted)' }}>
+                            <User size={10} />
+                            {r.createdBy?.name || r.created_by_name || 'Ẩn danh'}
+                          </div>
                         </div>
-                      </div>
-                      <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 6 }}>
-                        {r.comment}
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text-muted)' }}>
-                        <User size={10} />
-                        {r.createdBy?.name || r.created_by_name || 'Ẩn danh'}
-                      </div>
-                    </div>
-                ))}
-              </div>
+                      ))}
+                  </div>
                 ) : (
                   <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
                     <History size={28} style={{ marginBottom: 8, opacity: 0.4 }} />
@@ -763,9 +735,76 @@ export default function RequestDetail({ selected, onClose }) {
                 )}
               </div>
             )}
+
+
+            {/* ── TAB: RESULT ─────────────────────────── */}
+            {activeTab === 'result' && (() => {
+              const outputFiles = (request.files ?? []).filter(f => f.category === 'output');
+              return (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+                  {/* result_note */}
+                  {request.result_notes ? (
+                    <div style={{
+                      background: 'rgba(16,185,129,0.06)',
+                      border: '1px solid rgba(16,185,129,0.22)',
+                      borderRadius: 10, padding: '12px 14px',
+                      borderLeft: '3px solid #10b981',
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                        <FileText size={12} color="#10b981" />
+                        <span style={{
+                          fontSize: 11, fontWeight: 700, color: '#10b981',
+                          textTransform: 'uppercase', letterSpacing: '0.5px',
+                        }}>
+                          Ghi chú kết quả
+                        </span>
+                      </div>
+                      <div style={{
+                        fontSize: 13, color: 'var(--text-secondary)',
+                        lineHeight: 1.6, wordBreak: 'break-word',
+                        overflowWrap: 'break-word', whiteSpace: 'pre-wrap',
+                      }}>
+                        {request.result_notes}
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{
+                      background: 'rgba(107,114,128,0.06)',
+                      border: '1px solid rgba(107,114,128,0.15)',
+                      borderRadius: 10, padding: '10px 14px',
+                      display: 'flex', alignItems: 'center', gap: 8,
+                    }}>
+                      <Info size={13} color="#6b7280" />
+                      <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Chưa có ghi chú kết quả</span>
+                    </div>
+                  )}
+
+                  {/* output files */}
+                  <div>
+                    <SectionHeader
+                      icon={<Download size={14} />}
+                      title="Tệp kết quả"
+                      count={outputFiles.length}
+                    />
+                    {outputFiles.length > 0 ? (
+                      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                        {outputFiles.map(f => <FilePreview key={f.id} file={f} />)}
+                      </div>
+                    ) : (
+                      <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)' }}>
+                        <Download size={26} style={{ marginBottom: 8, opacity: 0.35 }} />
+                        <p style={{ fontSize: 13 }}>Chưa có tệp kết quả</p>
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+              );
+            })()}
           </div>
 
-          {/* ══ FOOTER ══════════════════════════════════════ */}
+          {/* ══ FOOTER ════════════════════════════════════ */}
           {(canAssign || canRevision || canComplete || canCancel || canApprove || canReject) && (
             <div style={{
               padding: '12px 20px',
@@ -774,8 +813,6 @@ export default function RequestDetail({ selected, onClose }) {
               display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
               flexShrink: 0,
             }}>
-
-              {/* Assign */}
               {canAssign && (
                 <ActionButton
                   icon={<UserCheck size={14} />}
@@ -786,17 +823,16 @@ export default function RequestDetail({ selected, onClose }) {
                 />
               )}
 
-              {/* Complete */}
+              {/* Nút "Hoàn thành" mở CompleteRequestModal */}
               {canComplete && (
                 <ActionButton
                   icon={<CheckCircle size={14} />}
                   label="Hoàn thành"
-                  onClick={() => { handleUpdateStatus('done') }}
+                  onClick={() => setShowComplete(true)}
                   color="#10b981"
                 />
               )}
 
-              {/* Approve */}
               {canApprove && (
                 <ActionButton
                   icon={<Shield size={14} />}
@@ -806,7 +842,6 @@ export default function RequestDetail({ selected, onClose }) {
                 />
               )}
 
-              {/* Revision */}
               {canRevision && (
                 <ActionButton
                   icon={<RotateCcw size={14} />}
@@ -817,7 +852,6 @@ export default function RequestDetail({ selected, onClose }) {
                 />
               )}
 
-              {/* Reject */}
               {canReject && (
                 <ActionButton
                   icon={<XCircle size={14} />}
@@ -828,7 +862,6 @@ export default function RequestDetail({ selected, onClose }) {
                 />
               )}
 
-              {/* Cancel */}
               {canCancel && (
                 <ActionButton
                   icon={<XCircle size={14} />}
@@ -857,7 +890,6 @@ export default function RequestDetail({ selected, onClose }) {
             </div>
           )}
 
-          {/* Footer (no actions) */}
           {!(canAssign || canRevision || canComplete || canCancel || canApprove || canReject) && (
             <div style={{
               padding: '12px 20px',
@@ -887,7 +919,10 @@ export default function RequestDetail({ selected, onClose }) {
         request={request}
         open={showRevision}
         onClose={() => setShowRevision(false)}
-        onRevised={() => { setShowRevision(false); onClose(); }}
+        onRevised={async () => {
+          setShowRevision(false);
+          await fetchRequest();
+        }}
       />
 
       <AssignModal
@@ -895,13 +930,19 @@ export default function RequestDetail({ selected, onClose }) {
         open={showAssign}
         onClose={() => setShowAssign(false)}
         onAssigned={async () => {
-          const d = await getRequestById(selected);
-          setRequest(d?.data || d);
           setShowAssign(false);
+          await fetchRequest();
         }}
       />
 
-      {/* ── Confirm Dialog ── */}
+      {/* CompleteRequestModal: onCompleted nhận (FormData, onProgress) → Promise */}
+      <CompleteRequestModal
+        request={request}
+        open={showComplete}
+        onClose={() => setShowComplete(false)}
+        onCompleted={handleCompleted}
+      />
+
       {confirm && (
         <ConfirmDialog
           open={!!confirm}

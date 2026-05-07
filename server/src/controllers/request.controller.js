@@ -139,3 +139,22 @@ export async function assign(req, res, next) {
     return response.success(res, data, "Gán nhân viên thành công", 200)
   } catch (err) { next(err); }
 }
+
+
+
+//done
+export async function completeRequest(req, res, next) {
+  try {
+
+    const requestId = parseInt(req.params.id);
+    const userId    = req.user?.id || 1;
+    const notes     = req.body.notes?.trim() || null;
+    const files     = req.files ?? [];    
+ 
+    const data = await requestService.completeRequest(requestId, userId, notes, files );
+ 
+    return response.success(res, data, 'Hoàn thành yêu cầu thành công', 200);
+  } catch (err) {
+    next(err);
+  }
+}

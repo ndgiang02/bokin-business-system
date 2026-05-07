@@ -81,5 +81,24 @@ export const requestApi = {
   },
 
 
-  delete: (id) => Promise.resolve({ success: true })
+  delete: (id) => Promise.resolve({ success: true }),
+
+
+  completeRequest: async (id,formData, onProgress) => {
+    try {
+      const res = await axiosClient.post(`/requests/${id}/complete`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (e) => {
+          if (e.lengthComputable && onProgress) {
+            onProgress(Math.round((e.loaded / e.total) * 100));
+          }
+        },
+      });
+
+      return res;
+    } catch (err) {
+      console.error('Lỗi completeRequest:', err);
+      throw err; //  để store xử lý
+    }
+  },
 };

@@ -5,7 +5,6 @@ import { authStore } from '../../store/authStore.js';
 import { toast } from '../../shared/toast/useToast.js';
 import { ROLE_LABELS, ROLE_COLORS } from '../../utils/roleUtils.js';
 
-//const DEMO_ACCOUNTS = MOCK_USERS.map(u => ({ email: u.email, role: u.role, name: u.name }));
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -18,12 +17,11 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const ok = await login(email, password);
-    console.log('Login result:', ok);
     if (ok) {
         navigate('/dashboard');
     }
     else { 
-        //toast.error(ok.message || 'Đăng nhập thất bại');
+        toast.error(ok.message || 'Đăng nhập thất bại');
     }
   
   };
