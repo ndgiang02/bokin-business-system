@@ -76,7 +76,7 @@ export default function LoginPage() {
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 800, color: 'var(--text-primary)' }}>
               Quản Lý Hệ Thống
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', letterSpacing: 1 }}>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-display)', letterSpacing: 1 }}>
               ENTERPRISE MANAGEMENT v2.0
             </div>
           </div>
@@ -184,7 +184,7 @@ export default function LoginPage() {
       }}>
         <div style={{
           fontSize: 11,
-          fontFamily: 'var(--font-mono)',
+          fontFamily: 'var(--font-display)',
           color: 'var(--text-muted)',
           letterSpacing: 1.5,
           textTransform: 'uppercase',
@@ -201,7 +201,7 @@ export default function LoginPage() {
           borderRadius: 8,
           fontSize: 11,
           color: 'var(--text-muted)',
-          fontFamily: 'var(--font-mono)',
+          fontFamily: 'var(--font-display)',
         }}>
           Mật khẩu mặc định: <span style={{ color: 'var(--accent)' }}>123456</span>
         </div>

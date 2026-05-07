@@ -145,13 +145,6 @@ export default function CreateRequestModal({ open, onClose, onCreated }) {
   const [uploadPct,   setUploadPct]   = useState(0);
   const [uploadError, setUploadError] = useState('');
 
-  const generateCode = () => {
-    const now  = new Date();
-    const date = now.toISOString().slice(0, 10).replace(/-/g, '');
-    const time = now.toTimeString().slice(0, 8).replace(/:/g, '');
-    const rand = Math.random().toString(36).substring(2, 5).toUpperCase();
-    return `REQ-${date}-${time}-${rand}`;
-  };
 
   const [form, setForm] = useState({
     productTypes: [], videoQuality: '',
@@ -177,7 +170,7 @@ const [departments, setDepartments] = useState([]);
 
   useEffect(() => {
     if (open) {
-      setForm({ code: generateCode(), productTypes: [], videoQuality: '', priority: '', deadline: '', quantity: 1, splitByImage: false, notes: '', to_department: '' });
+      setForm({ productTypes: [], videoQuality: '', priority: '', deadline: '', quantity: 1, splitByImage: false, notes: '', to_department: '' });
       setFiles([]); setErrors({}); setSaved(false); setSaving(false);
       setUploadPct(0); setUploadError('');
     }
@@ -251,9 +244,12 @@ const [departments, setDepartments] = useState([]);
       if (key === 'productTypes') {
         fd.append(key, value.join(',')); // array  string
       } 
-      else if (key === 'deadline') {
-        fd.append(key, value ? value.toISOString() : '');
-      } 
+     else if (key === 'deadline') {
+      fd.append(
+          key,
+          value ? new Date(value).toISOString() : ''
+        );
+      }
       else if (key === 'to_department') {
         fd.append(key, value ? Number(value) : '');
       }
@@ -400,7 +396,7 @@ const [departments, setDepartments] = useState([]);
                               onMouseLeave={e => { if (form.videoQuality !== q.value) e.currentTarget.style.background = 'transparent'; }}
                             >
                               <span style={{ fontSize: 13, fontWeight: form.videoQuality === q.value ? 700 : 400, color: form.videoQuality === q.value ? 'var(--accent)' : 'var(--text-primary)' }}>{q.label}</span>
-                              <span style={{ fontSize: 12, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>Điểm: <strong>{q.diem}</strong></span>
+                              <span style={{ fontSize: 12, fontFamily: 'var(--font-display)', color: 'var(--text-muted)' }}>Điểm: <strong>{q.diem}</strong></span>
                             </div>
                           ))}
                         </div>
@@ -447,10 +443,9 @@ const [departments, setDepartments] = useState([]);
               {/* Thời hạn */}
               <FieldRow label="Thời hạn" required>
                 <div style={{ maxWidth: 260 }}>
-                  <DatePicker
+                 <DatePicker
                     selected={form.deadline ? new Date(form.deadline) : null}
-                    onChange={(date) => set('deadline', date)}
-                    
+                    onChange={(date) => set('deadline', date ? date.getTime() : null)}
                     showTimeSelect
                     timeFormat="HH:mm"
                     timeIntervals={15}
@@ -552,7 +547,7 @@ const [departments, setDepartments] = useState([]);
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>
                   <span>Đang upload...</span>
-                  <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent)' }}>{uploadPct}%</span>
+                  <span style={{ fontFamily: 'var(--font-display)', color: 'var(--accent)' }}>{uploadPct}%</span>
                 </div>
                 <div style={{ height: 4, background: 'var(--bg-input)', borderRadius: 2, overflow: 'hidden' }}>
                   <div style={{ height: '100%', width: `${uploadPct}%`, background: 'var(--accent)', borderRadius: 2, transition: 'width 0.3s' }} />

@@ -43,7 +43,7 @@ CREATE TABLE requests (
 
     priority ENUM('low', 'medium', 'high', 'urgent') NOT NULL DEFAULT 'medium',
 
-    deadline DATE NOT NULL,
+    deadline TIMESTAMP NOT NULL,
     quantity INT DEFAULT 1,
 
     split_by_image BOOLEAN DEFAULT FALSE,

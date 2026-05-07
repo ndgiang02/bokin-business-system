@@ -8,7 +8,7 @@ const TooltipCustom = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   return (
     <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8, padding: '10px 14px', fontSize: 12 }}>
-      <div style={{ color: 'var(--text-muted)', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>{label}</div>
+      <div style={{ color: 'var(--text-muted)', marginBottom: 6, fontFamily: 'var(--font-display)' }}>{label}</div>
       {payload.map(p => (
         <div key={p.name} style={{ color: p.color, display: 'flex', gap: 8, marginBottom: 2 }}>
           <span>{p.name}:</span><strong>{p.value}M</strong>

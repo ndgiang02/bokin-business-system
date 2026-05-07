@@ -193,7 +193,7 @@ export default function DepartmentPage() {
                       background: 'var(--accent-dim)', color: 'var(--accent)',
                       border: '1px solid rgba(37,99,235,0.2)',
                       borderRadius: 4, padding: '1px 7px',
-                      fontSize: 10, fontWeight: 700, fontFamily: 'var(--font-mono)',
+                      fontSize: 10, fontWeight: 700, fontFamily: 'var(--font-display)',
                     }}>
                       {dept.code}
                     </span>

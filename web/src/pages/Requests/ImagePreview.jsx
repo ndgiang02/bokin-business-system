@@ -1,5 +1,17 @@
 import {  Download } from 'lucide-react';
 
+const handleDownload = async (url, name) => {
+  const res = await fetch(url);
+  const blob = await res.blob();
+
+  const link = document.createElement('a');
+  link.href = window.URL.createObjectURL(blob);
+  link.download = name;
+  link.click();
+
+  window.URL.revokeObjectURL(link.href);
+};
+
 
 export default function ImagePreview({ url, name, onClose }) {
   if (!url) return null;
@@ -25,18 +37,23 @@ export default function ImagePreview({ url, name, onClose }) {
         }}
       />
       <div style={{ display: 'flex', gap: 10 }} onClick={e => e.stopPropagation()}>
-        <a
-          href={url} download={name}
+        <div
+          onClick={() => handleDownload(url, name)}
           style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '8px 18px', borderRadius: 8,
-            background: 'var(--accent)', color: '#fff',
-            fontSize: 13, fontWeight: 600, textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '8px 18px',
+            borderRadius: 8,
+            background: 'var(--accent)',
+            color: '#fff',
+            cursor: 'pointer',
+            fontSize: 13,
+            fontWeight: 600,
           }}
         >
-        
-        <Download size={14} /> Tải về
-        </a>
+          <Download size={14} /> Tải về
+        </div>
         <button
           onClick={onClose}
           style={{
@@ -46,6 +63,7 @@ export default function ImagePreview({ url, name, onClose }) {
             color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600,
           }}
         >
+          
           Đóng
         </button>
       </div>

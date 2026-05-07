@@ -48,7 +48,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   return (
     <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8, padding: '10px 14px', fontSize: 12 }}>
-      <div style={{ color: 'var(--text-muted)', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>{label}</div>
+      <div style={{ color: 'var(--text-muted)', marginBottom: 6, fontFamily: 'var(--font-display)' }}>{label}</div>
       {payload.map(p => (
         <div key={p.name} style={{ color: p.color, display: 'flex', gap: 8, marginBottom: 2 }}>
           <span>{p.name}:</span><strong>{p.value}</strong>
@@ -262,7 +262,7 @@ export default function DashboardPage() {
                         fontSize: 10, fontWeight: 700,
                         color: 'var(--text-muted)',
                         textTransform: 'uppercase', letterSpacing: '0.8px',
-                        fontFamily: 'var(--font-mono)',
+                        fontFamily: 'var(--font-display)',
                         borderBottom: '1px solid var(--border)',
                         background: 'var(--bg-secondary)',
                         whiteSpace: 'nowrap',
@@ -305,13 +305,13 @@ export default function DashboardPage() {
                           </td>
 
                           {/* Tổng */}
-                          <td style={{ padding: '10px 12px', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', textAlign: 'center' }}>
+                          <td style={{ padding: '10px 12px', fontFamily: 'var(--font-display)', color: 'var(--text-secondary)', textAlign: 'center' }}>
                             {h.assigned}
                           </td>
 
                           {/* Hoàn thành */}
                           <td style={{ padding: '10px 12px', textAlign: 'center' }}>
-                            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--success)' }}>
+                            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--success)' }}>
                               {h.done}
                             </span>
                           </td>
@@ -326,7 +326,7 @@ export default function DashboardPage() {
                                   borderRadius: 2, transition: 'width 0.6s ease',
                                 }} />
                               </div>
-                              <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', flexShrink: 0 }}>
+                              <span style={{ fontSize: 11, fontFamily: 'var(--font-display)', color: 'var(--text-muted)', flexShrink: 0 }}>
                                 {pct}%
                               </span>
                             </div>
@@ -365,7 +365,7 @@ export default function DashboardPage() {
                     <div>
                       <div className="activity-text">
                         <strong>{a.user_name}</strong> {a.action}{' '}
-                        <span style={{ color: 'var(--accent)', fontFamily: 'var(--font-mono)', fontSize: 11 }}>{a.target}</span>
+                        <span style={{ color: 'var(--accent)', fontFamily: 'var(--font-display)', fontSize: 11 }}>{a.target}</span>
                       </div>
                       <div className="activity-time">{ago}</div>
                     </div>

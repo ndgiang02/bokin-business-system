@@ -9,6 +9,7 @@ import { hasPermission } from '../../utils/roleUtils.js';
 import RevisionModal from './RevisionModal.jsx';
 import CompleteRequestModal from './CompleteRequestModal.jsx';
 import AssignModal   from './AssignModal.jsx';
+import ImagePreview from './ImagePreview.jsx';
 import { requestStore } from '../../store/requestStore';
 import { authStore }     from '../../store/authStore.js';
 import { ROLES }         from '../../utils/roleUtils.js';
@@ -332,6 +333,7 @@ function ActionButton({ icon, label, onClick, color, outline, disabled, isLoadin
 // ── Main Component ────────────────────────────────────────
 export default function RequestDetail({ selected, onClose }) {
   const [request,       setRequest]       = useState(null);
+  const [previewFile,   setPreviewFile]   = useState(null);
   const [showRevision,  setShowRevision]  = useState(false);
   const [showAssign,    setShowAssign]    = useState(false);
   const [showComplete,  setShowComplete]  = useState(false);   // ← kiểm soát CompleteRequestModal
@@ -483,7 +485,7 @@ export default function RequestDetail({ selected, onClose }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
                   <span style={{
                     fontSize: 18, fontWeight: 800, color: 'var(--text-primary, #fff)',
-                    letterSpacing: '-0.3px', fontFamily: 'var(--font-mono)',
+                    letterSpacing: '-0.3px', fontFamily: 'var(--font-display)',
                   }}>
                     {request.code}
                   </span>
@@ -491,7 +493,7 @@ export default function RequestDetail({ selected, onClose }) {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <StatusBadge status={request.status} />
-                  <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-display)' }}>
                     {request.created_at ? new Date(request.created_at).toLocaleDateString('vi-VN') : ''}
                   </span>
                 </div>
@@ -674,7 +676,26 @@ export default function RequestDetail({ selected, onClose }) {
               <div>
                 {hasFiles ? (
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                    {request.files.map(f => <FilePreview key={f.id} file={f} />)}
+                    {request.files.map(f => {
+                        const isImage = f.type === 'image' || f.mimeType?.startsWith('image/');
+
+                        return (
+                          <div key={f.id} onClick={() => {
+                            if (isImage) {
+                              setPreviewFile(f);
+                            }
+                          }}>
+                            {isImage ? (
+                              <img
+                                src={f.url}
+                                style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 8 }}
+                              />
+                            ) : (
+                              <FilePreview file={f} />
+                            )}
+                          </div>
+                        );
+                 })}
                   </div>
                 ) : (
                   <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
@@ -706,13 +727,13 @@ export default function RequestDetail({ selected, onClose }) {
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                               <span style={{
                                 fontSize: 11, fontWeight: 800, color: '#f97316',
-                                fontFamily: 'var(--font-mono)',
+                                fontFamily: 'var(--font-display)',
                                 background: 'rgba(249,115,22,0.12)',
                                 padding: '2px 8px', borderRadius: 6,
                               }}>
                                 {arr.length - idx}
                               </span>
-                              <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                              <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-display)' }}>
                                 {formatDate(r.createdAt || r.created_at)}
                               </span>
                             </div>
@@ -934,6 +955,14 @@ export default function RequestDetail({ selected, onClose }) {
           await fetchRequest();
         }}
       />
+
+      {previewFile && (
+        <ImagePreview
+          url={previewFile.url}
+          name={previewFile.name}
+          onClose={() => setPreviewFile(null)}
+        />
+      )}
 
       {/* CompleteRequestModal: onCompleted nhận (FormData, onProgress) → Promise */}
       <CompleteRequestModal

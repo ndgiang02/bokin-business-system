@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FilePlus, Search, Eye, Trash2, RefreshCw, SlidersHorizontal } from 'lucide-react';
-import CreateRequestModal from './CreatRquestModal.jsx';
+import CreateRequestModal from './CreateRequestModal.jsx';
 import { authStore } from '../../store/authStore.js';
 import { userStore } from '../../store/userStore.js';
 import { requestStore } from '../../store/requestStore.js';
@@ -16,6 +16,7 @@ const STATUS_MAP = {
   processing: { label: 'Đang Xử Lý',   class: 'badge-in_progress' },
 };
 const PRIORITY_MAP = {
+  urgent: { label: 'Khẩn cấp',   class: 'badge-urgent' },
   high:   { label: 'Cao',        class: 'badge-high' },
   medium: { label: 'Trung bình', class: 'badge-medium' },
   low:    { label: 'Thấp',       class: 'badge-low' },
@@ -180,6 +181,7 @@ export default function RequestList() {
             <div style={{ display: 'flex', gap: 6 }}>
               {['all', 'pending', 'processing', 'done', 'cancelled'].map(s => (
                 <button key={s} onClick={() => setStatus(s)} style={{
+                  fontFamily: 'var(--font-display)',
                   padding: '4px 12px', borderRadius: 6, border: '1px solid',
                   fontSize: 11, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
                   borderColor: statusFilter === s ? 'var(--accent)' : 'var(--border)',
@@ -196,6 +198,7 @@ export default function RequestList() {
             <div style={{ display: 'flex', gap: 6 }}>
               {['all', 'high', 'medium', 'low'].map(p => (
                 <button key={p} onClick={() => setPriority(p)} style={{
+                  fontFamily: 'var(--font-display)',
                   padding: '4px 12px', borderRadius: 6, border: '1px solid',
                   fontSize: 11, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
                   borderColor: priorityFilter === p ? 'var(--accent)' : 'var(--border)',
@@ -235,7 +238,7 @@ export default function RequestList() {
                       padding: '10px 16px', textAlign: 'left', fontSize: 10,
                       fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase',
                       letterSpacing: '1px', borderBottom: '1px solid var(--border)',
-                      fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap',
+                      fontFamily: 'var(--font-display)', whiteSpace: 'nowrap',
                     }}>{col}</th>
                   ))}
                 </tr>
@@ -249,9 +252,9 @@ export default function RequestList() {
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
                     <td style={{ padding: '13px 16px' }}>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--accent)', fontWeight: 600 }}>{r.code}</span>
+                      <span style={{ fontFamily: 'var(--font-display)', fontSize: 13, color: 'var(--accent)', fontWeight: 600 }}>{r.code}</span>
                     </td>
-                    <td style={{ padding: '13px 16px', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '13px 16px', fontFamily: 'var(--font-display)', fontSize: 13, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                       {new Date(r.created_at).toLocaleDateString('vi-VN')}
                     </td>
                     <td style={{ padding: '13px 16px' }}>
@@ -260,7 +263,7 @@ export default function RequestList() {
                     <td style={{ padding: '13px 16px' }}>
                       <span className={`badge ${STATUS_MAP[r.status]?.class}`}>{STATUS_MAP[r.status]?.label}</span>
                     </td>
-                    <td style={{ padding: '13px 16px', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '13px 16px', fontFamily: 'var(--font-display)', fontSize: 13, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                       {new Date(r.deadline).toLocaleDateString('vi-VN')}
                     </td>
                     <td style={{ padding: '13px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{r.created_by_name}</td>

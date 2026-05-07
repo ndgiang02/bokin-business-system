@@ -14,7 +14,7 @@ export function Table({ columns, data, onRowClick, emptyText = 'Không có dữ 
                 color: 'var(--text-muted)',
                 textTransform: 'uppercase',
                 letterSpacing: '1px',
-                fontFamily: 'var(--font-mono)',
+                fontFamily: 'var(--font-display)',
                 borderBottom: '1px solid var(--border)',
                 whiteSpace: 'nowrap',
                 ...col.headerStyle
@@ -87,7 +87,7 @@ export function Pagination({ page, total, pageSize, onChange }) {
               borderRadius: 6,
               cursor: 'pointer',
               fontSize: 12,
-              fontFamily: 'var(--font-mono)',
+              fontFamily: 'var(--font-display)',
               transition: 'all 0.15s',
             }}
           >

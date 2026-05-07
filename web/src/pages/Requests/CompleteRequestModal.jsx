@@ -197,7 +197,7 @@ export default function CompleteRequestModal({ request, open, onClose, onComplet
                 <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary, #fff)' }}>
                   Hoàn thành yêu cầu
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted, #888)', fontFamily: 'var(--font-mono)' }}>
+                <div style={{ fontSize: 11, color: 'var(--text-muted, #888)', fontFamily: 'var(--font-display)' }}>
                   {request.code}
                 </div>
               </div>

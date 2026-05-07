@@ -83,7 +83,7 @@ export default function MemberList() {
           Tất cả
           <span style={{
             background: roleFilter === 'all' ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.07)',
-            borderRadius: 20, padding: '0 7px', fontSize: 11, fontFamily: 'var(--font-mono)',
+            borderRadius: 20, padding: '0 7px', fontSize: 11, fontFamily: 'var(--font-display)',
           }}>{members.length}</span>
         </div>
         {roles.map(r => (
@@ -102,7 +102,7 @@ export default function MemberList() {
             {ROLE_LABELS[r]}
             <span style={{
               background: `${ROLE_COLORS[r]}22`, color: ROLE_COLORS[r],
-              borderRadius: 20, padding: '0 7px', fontSize: 11, fontFamily: 'var(--font-mono)',
+              borderRadius: 20, padding: '0 7px', fontSize: 11, fontFamily: 'var(--font-display)',
             }}>{members.filter(m => m.role === r).length}</span>
           </div>
         ))}
@@ -193,7 +193,7 @@ export default function MemberList() {
                       color: ROLE_COLORS[member.role],
                       border: `1px solid ${ROLE_COLORS[member.role]}30`,
                       borderRadius: 20, padding: '2px 9px',
-                      fontSize: 10, fontWeight: 700, fontFamily: 'var(--font-mono)',
+                      fontSize: 10, fontWeight: 700, fontFamily: 'var(--font-display)',
                       textTransform: 'uppercase', letterSpacing: '0.5px',
                     }}>
                       <Shield size={9} />
@@ -256,7 +256,7 @@ export default function MemberList() {
                     <th key={col} style={{
                       padding: '12px 16px', textAlign: 'left', fontSize: 10, fontWeight: 700,
                       color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px',
-                      borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-mono)',
+                      borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-display)',
                       whiteSpace: 'nowrap',
                     }}>{col}</th>
                   ))}
@@ -287,15 +287,15 @@ export default function MemberList() {
                         background: `${ROLE_COLORS[member.role]}15`, color: ROLE_COLORS[member.role],
                         border: `1px solid ${ROLE_COLORS[member.role]}30`,
                         borderRadius: 20, padding: '3px 9px', fontSize: 10, fontWeight: 700,
-                        fontFamily: 'var(--font-mono)', display: 'inline-flex', alignItems: 'center', gap: 4,
+                        fontFamily: 'var(--font-display)', display: 'inline-flex', alignItems: 'center', gap: 4,
                       }}>
                         <Shield size={9} />{ROLE_LABELS[member.role]}
                       </span>
                     </td>
                     <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>{member.department}</td>
-                    <td style={{ padding: '12px 16px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 12 }}>{member.email}</td>
-                    <td style={{ padding: '12px 16px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 12 }}>{member.phone}</td>
-                    <td style={{ padding: '12px 16px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 12 }}>{new Date(member.created_at).toLocaleDateString('vi-VN')}</td>
+                    <td style={{ padding: '12px 16px', color: 'var(--text-muted)', fontFamily: 'var(--font-display)', fontSize: 12 }}>{member.email}</td>
+                    <td style={{ padding: '12px 16px', color: 'var(--text-muted)', fontFamily: 'var(--font-display)', fontSize: 12 }}>{member.phone}</td>
+                    <td style={{ padding: '12px 16px', color: 'var(--text-muted)', fontFamily: 'var(--font-display)', fontSize: 12 }}>{new Date(member.created_at).toLocaleDateString('vi-VN')}</td>
                     {canManage && (
                       <td style={{ padding: '12px 16px' }}>
                         <div style={{ display: 'flex', gap: 6 }}>
