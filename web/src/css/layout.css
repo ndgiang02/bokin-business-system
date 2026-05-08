@@ -1,4 +1,8 @@
 /* layout.css - Global styles & CSS variables */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;700&family=Syne:wght@400;700;800&display=swap');
+
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
