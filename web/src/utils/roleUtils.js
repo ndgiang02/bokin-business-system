@@ -13,23 +13,19 @@ export const ROLE_LABELS = {
 
 export const ROLE_COLORS = {
   super_admin: '#f59e0b',
-  truong_phong_kinh_doanh: '#3b82f6',
-  nhan_vien_kinh_doanh: '#8b5cf6',
-  nhan_vien_san_xuat: '#06b6d4',
+  truong_phong: '#3b82f6',
+  nhan_vien: '#06b6d4',
 };
 
 export const ROLE_BADGE_COLORS = {
   super_admin: { bg: '#fef3c7', text: '#92400e', border: '#fcd34d' },
-  truong_phong_kinh_doanh: { bg: '#eff6ff', text: '#1e40af', border: '#93c5fd' },
-  truong_phong_sx: { bg: '#ecfdf5', text: '#065f46', border: '#6ee7b7' },
-  nhan_vien_kinh_doanh: { bg: '#f5f3ff', text: '#4c1d95', border: '#c4b5fd' },
-  nhan_vien_san_xuat: { bg: '#ecfeff', text: '#164e63', border: '#67e8f9' },
+  truong_phong: { bg: '#eff6ff', text: '#1e40af', border: '#93c5fd' },
+  nhan_vien: { bg: '#ecfeff', text: '#164e63', border: '#67e8f9' },
 };
 
 // ===== PERMISSION MATRIX =====
 export const PERMISSIONS = {
   // Dashboard
-  view_dashboard: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG, ROLES.NHAN_VIEN],
   view_dashboard: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG, ROLES.NHAN_VIEN],
 
 

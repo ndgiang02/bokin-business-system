@@ -41,6 +41,8 @@ export default function RequestList() {
 
   const navigate  = useNavigate();
   const canCreate = hasPermission(user?.role, 'create_request');
+  const canManageTasks = hasPermission(user?.role, 'manage_tasks');
+
 
   // ── Fetch list ──────────────────────────────────────────
   const fetchRequests = () => {
@@ -48,7 +50,8 @@ export default function RequestList() {
       status:   statusFilter !== 'all' ? statusFilter : undefined,
       priority: priorityFilter !== 'all' ? priorityFilter : undefined,
       search:   search || undefined,
-      department: user?.role === ROLES.SUPER_ADMIN ? undefined : user?.department_id,    
+      department: user?.role === ROLES.SUPER_ADMIN ? undefined : user?.department_id,
+      user_id: user?.role === ROLES.NHAN_VIEN ? user?.id : undefined,    
     };
     const pagination = { page: 1, limit: 20 };
 
@@ -278,7 +281,7 @@ export default function RequestList() {
                         >
                           <Eye size={13} />
                         </button>
-                        {canCreate && (
+                        {canManageTasks && (
                           <button
                             className="btn btn-danger btn-sm btn-icon"
                             title="Xóa"

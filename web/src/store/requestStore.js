@@ -32,7 +32,7 @@ export const requestStore = create((set, get) => ({
     try {
       set({ isLoading: true });
 
-      console.log("Fetching requests with filters:", filters, "and pagination:", pagination); // ← thêm log
+      console.log("Fetching requests with filters:", filters, "and pagination:", pagination); // thêm log
 
       const params = { ...filters, ...pagination };
       const res = await requestApi.getAllRequets(params);

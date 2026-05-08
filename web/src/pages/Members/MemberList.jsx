@@ -172,17 +172,26 @@ export default function MemberList() {
               <div style={{ padding: '18px 20px' }}>
                 {/* Avatar + name */}
                 <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginBottom: 16 }}>
-                  <div style={{
-                    width: 52, height: 52, flexShrink: 0,
-                    background: `${ROLE_COLORS[member.role]}20`,
-                    border: `2px solid ${ROLE_COLORS[member.role]}50`,
-                    borderRadius: 14,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 18,
-                    color: ROLE_COLORS[member.role],
-                  }}>
-                    {member.avatar}
-                  </div>
+                
+                    <div style={{
+                          width: 52,
+                          height: 52,
+                          flexShrink: 0,
+                          background: `${ROLE_COLORS[member.role]}20`,
+                          border: `2px solid ${ROLE_COLORS[member.role]}40`,
+                          borderRadius: 14,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontFamily: 'var(--font-display)',
+                          fontWeight: 800,
+                          fontSize: 18,
+                          color: ROLE_COLORS[member.role],
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                      {member.name?.charAt(0) || '?'}
+                    </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text-primary)', marginBottom: 3 }}>
                       {member.name}
@@ -278,7 +287,7 @@ export default function MemberList() {
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 12,
                           color: ROLE_COLORS[member.role],
-                        }}>{member.avatar}</div>
+                        }}>{member.name?.charAt(0) || '?'}</div>
                         <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{member.name}</span>
                       </div>
                     </td>

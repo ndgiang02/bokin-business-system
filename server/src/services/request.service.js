@@ -21,6 +21,7 @@ export async function getAllRequests(query) {
     createdById: query.createdById,
     search:      query.search,
     department:  query.department,
+    user_id:     query.user_id,
   };
   const pagination = {
     page:  parseInt(query.page)  || 1,

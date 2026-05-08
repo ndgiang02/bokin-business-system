@@ -4,10 +4,9 @@ const prisma = new PrismaClient();
 
 
 export async function getAllRequests(filters = {}, pagination = {}) {
-  const { status, priority, createdByName, search, department } = filters;
+  const { status, priority, createdByName, search, department, user_id } = filters;
   const { page = 1, limit = 30 } = pagination;
   const skip = (page - 1) * limit;
-
 
 
   const AND = [];
@@ -35,9 +34,18 @@ export async function getAllRequests(filters = {}, pagination = {}) {
         {
           to_department: Number(department),
           status: {
-            in: ['approved', 'processing', 'done', 'revision'], // 👈 tuỳ bạn define
+            in: ['approved', 'processing', 'done', 'revision'],
           },
         },
+      ],
+    });
+  }
+
+  if(user_id) {
+    AND.push({
+      OR: [
+        { created_by_id: Number(user_id) },
+        { assigned_to: Number(user_id) },
       ],
     });
   }
@@ -138,7 +146,7 @@ export async function createRequest(data, files = []) {
         notes: data.notes || null,
         split_by_image: Boolean(data.splitByImage),
         status: 'pending',
-        created_by_id: data.createdById,
+        created_by_id: data.createdById ? parseInt(data.createdById) : null,
         created_by_name: data.createdByName || 'Nhân viên',
         to_department: data.to_department ? parseInt(data.to_department) : null,
         from_department: deptId,

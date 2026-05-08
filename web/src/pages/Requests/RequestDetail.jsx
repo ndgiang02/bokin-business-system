@@ -593,25 +593,77 @@ export default function RequestDetail({ selected, onClose }) {
                       : '—'}
                   </InfoCard>
 
-                  <InfoCard label="Deadline" icon={<Calendar size={10} />}>
-                    {request?.deadline
-                      ? (() => {
-                          const d    = new Date(request.deadline);
-                          const diff = d - new Date();
-                          const days = Math.ceil(diff / 86400000);
-                          return (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                              <span>{d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
-                              {diff < 0
-                                ? <span style={{ fontSize: 10, color: '#ef4444', fontWeight: 700 }}>Quá hạn</span>
-                                : days <= 3
-                                ? <span style={{ fontSize: 10, color: '#f59e0b', fontWeight: 700 }}>Còn {days} ngày</span>
-                                : null}
-                            </div>
-                          );
-                        })()
-                      : '—'}
-                  </InfoCard>
+                <InfoCard label="Deadline" icon={<Calendar size={10} />}>
+                  {request?.deadline
+                    ? (() => {
+                        const d = new Date(request.deadline);
+                        const now = new Date();
+
+                        const diff = d.getTime() - now.getTime();
+
+                        const totalMinutes = Math.floor(diff / 60000);
+                        const totalHours = Math.floor(diff / 3600000);
+                        const days = Math.floor(diff / 86400000);
+                        const hours = Math.floor((diff % 86400000) / 3600000);
+
+                        return (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                            <span>
+                              {d.toLocaleString('vi-VN', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </span>
+
+                            {diff < 0 ? (
+                              <span
+                                style={{
+                                  fontSize: 10,
+                                  color: '#ef4444',
+                                  fontWeight: 700,
+                                }}
+                              >
+                                Quá hạn
+                              </span>
+                            ) : days > 0 ? (
+                              <span
+                                style={{
+                                  fontSize: 10,
+                                  color: '#f59e0b',
+                                  fontWeight: 700,
+                                }}
+                              >
+                                Còn {days} ngày {hours} giờ
+                              </span>
+                            ) : totalHours > 0 ? (
+                              <span
+                                style={{
+                                  fontSize: 10,
+                                  color: '#f59e0b',
+                                  fontWeight: 700,
+                                }}
+                              >
+                                Còn {totalHours} giờ
+                              </span>
+                            ) : (
+                              <span
+                                style={{
+                                  fontSize: 10,
+                                  color: '#f59e0b',
+                                  fontWeight: 700,
+                                }}
+                              >
+                                Còn {totalMinutes} phút
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })()
+                    : '—'}
+                </InfoCard>
 
                   <InfoCard label="Ngày tạo" icon={<Clock size={10} />}>
                     {request?.created_at ? new Date(request.created_at).toLocaleString('vi-VN') : '—'}

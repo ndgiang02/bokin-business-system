@@ -25,7 +25,11 @@ export async function createRequest(req, res, next) {
 
 export async function create(req, res, next) {
   try {
-    const data  = { ...req.body, createdById: req.user?.id || 1 };
+
+    console.log("Received create request with body:", req.body); // log body thô
+    console.log("Received create request with body:", req.userId); // log body thô
+
+    const data  = req.body;
     const files = req.files || [];
     const result = await requestService.createRequest(data, files);
     res.status(201).json({ success: true, message: 'Tạo yêu cầu thành công', data: result });
