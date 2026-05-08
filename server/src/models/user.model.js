@@ -10,7 +10,7 @@ exports.createUser = async (data) => {
 
 exports.findByEmail = async (email) => {
   const user = await prisma.user.findUnique({
-    where: { email },
+    where: { email, status: { not: -1 } },
     select: {
       id: true,
       name: true,
