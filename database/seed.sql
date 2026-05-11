@@ -6,7 +6,8 @@ SET CHARACTER SET utf8mb4;
 INSERT INTO roles (role, name) VALUES
 ('super_admin', 'Admin' ),
 ('truong_phong', 'Trưởng phòng '),
-('nhan_vien', 'Nhân viên');
+('nhan_vien', 'Nhân viên'), 
+('thuc_tap', 'Thực tập sinh');
 
 
 INSERT INTO departments (name, code) VALUES
