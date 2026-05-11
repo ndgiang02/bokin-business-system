@@ -159,7 +159,7 @@ export async function createRequest(data, files = []) {
             size: f.size,
             mime_type: f.mimeType,
             file_type: f.fileType,
-            uploaded_by: data.createdById,
+            uploaded_by: data.createdById ? parseInt(data.createdById) : null,
             category: 'input',
           })),
         },

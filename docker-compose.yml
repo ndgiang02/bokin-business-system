@@ -18,8 +18,8 @@ services:
     container_name: workflow_mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: workflow_db
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
       - "3307:3306"
     volumes:
@@ -38,23 +38,24 @@ services:
       - mysql
       - minio
     environment:
-      #MYSQL
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_USER: root
-      DB_PASSWORD: root
-      DB_NAME: workflow_db
-      DATABASE_URL: mysql://root:root@mysql:3306/workflow_db
+      # MYSQL
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DATABASE_URL: ${DATABASE_URL}
 
-      #MINIO
-      MINIO_ENDPOINT:   minio
-      MINIO_PORT:       9000
-      MINIO_USE_SSL:    "false"
-      MINIO_ACCESS_KEY: root
-      MINIO_ROOT_PASSWORD: 12345678
-      MINIO_BUCKET:     business-system
+      # MINIO
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_PORT: ${MINIO_PORT}
+      MINIO_USE_SSL: ${MINIO_USE_SSL}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+
       # CORS
-      ALLOWED_ORIGIN:   http://localhost:3000 
+      ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
     networks:
       - workflow-network
 
@@ -65,33 +66,27 @@ services:
     ports:
       - "3000:3000"
     environment:
-      VITE_API_URL:          http://localhost:5002 
-      VITE_MINIO_ENDPOINT:   http://localhost:9000
-      VITE_MINIO_BUCKET:     business-system
+      VITE_API_URL: ${VITE_API_URL}
+      VITE_MINIO_ENDPOINT: ${VITE_MINIO_ENDPOINT}
+      VITE_MINIO_BUCKET: ${VITE_MINIO_BUCKET}
     depends_on:
       - minio
       - server
     networks:
       - workflow-network
 
-  # MinIO 
   minio:
     image: minio/minio:latest
     container_name: minio
     ports:
       - "9000:9000"
-      - "9001:9001"  
+      - "9001:9001"
     environment:
-      MINIO_ROOT_USER: root
-      MINIO_ROOT_PASSWORD: 12345678
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     command: server /data --console-address ":9001"
     volumes:
-      #
-      # Linux / Mac:
-      - /Users/macbook/Desktop/business-system:/data
-      #
-      # Windows
-      # - C:/minio-data/business-system:/data
+      - ${MINIO_DATA_PATH}:/data
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
@@ -100,8 +95,7 @@ services:
       retries: 3
     networks:
       - workflow-network
- 
-  # Tạo bucket khi khởi động lần đầu
+
   minio-init:
     image: minio/mc:latest
     depends_on:
@@ -109,14 +103,13 @@ services:
         condition: service_healthy
     entrypoint: >
       /bin/sh -c "
-        mc alias set local http://minio:9000 root 12345678 &&
-        mc mb --ignore-existing local/business-system &&
-        mc anonymous set public local/business-system &&
+        mc alias set local http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
+        mc mb --ignore-existing local/${MINIO_BUCKET} &&
+        mc anonymous set public local/${MINIO_BUCKET} &&
         echo 'Bucket ready!'
       "
     networks:
       - workflow-network
-
 
 networks:
   workflow-network:
@@ -124,9 +117,3 @@ networks:
 
 volumes:
   mysql_data:
-
-  # Linux / Mac
-#sudo mkdir -p /opt/minio-data/business-system
-
-# Windows (PowerShell)
-#New-Item -ItemType Directory -Path "C:\minio-data\business-system"

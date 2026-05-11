@@ -1,5 +1,8 @@
 USE workflow_db;
 
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+
 INSERT INTO roles (role, name) VALUES
 ('super_admin', 'Admin' ),
 ('truong_phong', 'Trưởng phòng '),
