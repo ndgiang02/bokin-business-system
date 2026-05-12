@@ -21,4 +21,4 @@ INSERT INTO departments (name, code) VALUES
 
 INSERT INTO users (name, email, password, role_id,department_id, phone)
 VALUES
-('Admin','admin@company.com','$2a$12$u.ixDEt7aBbCe1YRfxOyD.XrnkD8ltp.2n8BW.bBcM84WLBPaW49i',1,1,'');
+('Admin','admin@company.com','$2a$12$WfFGsFluYShtLcHK3qSLDOidS1aEh22Qij3SxrTtPgLW5Km0F/ySm',1,1,'');
