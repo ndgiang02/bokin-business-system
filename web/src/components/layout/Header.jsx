@@ -8,6 +8,7 @@ const PAGE_TITLES = {
   '/requests':         ['Yêu Cầu',         'Requests'],
   '/approvals':        ['Phê Duyệt',        'Approvals'],
   '/tasks':            ['Công Việc',         'Tasks'],
+  '/schedule':         ['Lịch Làm Việc',     'Schedule'],
   '/members':          ['Thành Viên',        'Members'],
   '/reports':          ['Báo Cáo',           'Reports'],
   '/settings':         ['Cài Đặt',           'Settings'],

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, FileText, FilePlus, CheckSquare, Kanban,
-  Users, UserPlus, BarChart3, Settings, LogOut, ChevronLeft,
+  Users, UserPlus, BarChart3, Settings, LogOut, CalendarDays, ChevronLeft,
   ChevronRight, X
 } from 'lucide-react';
 import { authStore } from '../../store/authStore.js';
@@ -11,7 +11,7 @@ import '../../css/sidebar.css';
 
 const ICONS = {
   LayoutDashboard, FileText, FilePlus, CheckSquare, Kanban,
-  Users, UserPlus, BarChart3, Settings, LogOut
+  Users, UserPlus, BarChart3, Settings, LogOut, CalendarDays
 };
 
 export default function Sidebar({ mobileOpen, onMobileClose }) {

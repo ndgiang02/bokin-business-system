@@ -14,6 +14,7 @@ import  { EditMember } from './pages/Members/EditMember';
 import  MemberList from './pages/Members/MemberList';
 import  { SettingsPage } from "./pages/Settings/SettingsPage";
 import DepartmentPage from "./pages/Department/DepartmentPage.jsx";
+import SchedulePage from "./pages/Schedule/SchedulePage.jsx";
 
 
 function AppLoading() {
@@ -78,6 +79,7 @@ export default function App() {
           <Route path="/dashboard" element={<PrivateRoute permission="view_dashboard"><DashboardPage /></PrivateRoute>} />
           <Route path="/requests" element={<PrivateRoute permission="view_requests"><RequestList /></PrivateRoute>} />
           <Route path="/members" element={<PrivateRoute permission="view_members"><MemberList /></PrivateRoute>} />
+          <Route path="/schedule" element={<PrivateRoute permission="view_schedule"><SchedulePage /></PrivateRoute>} />
           <Route path="/settings" element={<PrivateRoute permission="view_settings"><SettingsPage /></PrivateRoute>} />
           <Route path="/department" element={<PrivateRoute permission="manage_members"><DepartmentPage /></PrivateRoute>} />
           <Route path="/members/create" element={<PrivateRoute permission="manage_members"><CreateMember /></PrivateRoute>} />
