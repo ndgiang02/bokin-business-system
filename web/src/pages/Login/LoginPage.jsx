@@ -173,40 +173,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right panel - Demo accounts */}
-      <div style={{
-        width: 360,
-        padding: '60px 40px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        position: 'relative',
-      }}>
-        <div style={{
-          fontSize: 11,
-          fontFamily: 'var(--font-display)',
-          color: 'var(--text-muted)',
-          letterSpacing: 1.5,
-          textTransform: 'uppercase',
-          marginBottom: 20,
-        }}>
-          // Demo accounts
-        </div>
-
-        <div style={{
-          marginTop: 24,
-          padding: '12px 14px',
-          background: 'var(--bg-card)',
-          border: '1px solid var(--border)',
-          borderRadius: 8,
-          fontSize: 11,
-          color: 'var(--text-muted)',
-          fontFamily: 'var(--font-display)',
-        }}>
-          Mật khẩu mặc định: <span style={{ color: 'var(--accent)' }}>123456</span>
-        </div>
-      </div>
-
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
