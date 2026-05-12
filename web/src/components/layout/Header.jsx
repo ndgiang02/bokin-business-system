@@ -1,4 +1,4 @@
-import { Bell, Search, Menu } from 'lucide-react';
+import { Bell, Search, Menu, Sparkles } from 'lucide-react';
 import { authStore } from '../../store/authStore.js';
 import { ROLE_LABELS } from '../../utils/roleUtils.js';
 import '../../css/header.css';
@@ -24,30 +24,40 @@ export default function Header({ onMenuToggle }) {
 
   return (
     <header className="header">
-      {/* Hamburger — chỉ hiện trên mobile */}
       <button className="header-hamburger" onClick={onMenuToggle} aria-label="Mở menu">
         <Menu size={18} />
       </button>
 
-      {/* Breadcrumb */}
-      <div className="header-breadcrumb">
-        {parentPage && (
-          <>
-            <span className="breadcrumb-item">{parentPage}</span>
-            <span className="breadcrumb-sep">/</span>
-          </>
-        )}
-        <span className="breadcrumb-current">{currentPage}</span>
+      <div className="header-title-block">
+        <div className="header-breadcrumb">
+          {parentPage && (
+            <>
+              <span className="breadcrumb-item">{parentPage}</span>
+              <span className="breadcrumb-sep">/</span>
+            </>
+          )}
+          <span className="breadcrumb-current">{currentPage}</span>
+        </div>
+        <div className="header-greeting">
+          <Sparkles size={14} />
+          Xin chào, {user?.name || 'bạn'}
+        </div>
       </div>
 
-      {/* Actions */}
       <div className="header-actions">
-        <span className="header-date">{today}</span>
-        <button className="header-icon-btn" title="Tìm kiếm">
+        <button className="header-search" title="Tìm kiếm">
           <Search size={16} />
+          <span>Tìm kiếm nhanh...</span>
         </button>
 
-        <button className="header-icon-btn" title="Thông báo" style={{ position: 'relative' }}>
+        <span className="header-date">{today}</span>
+
+        <span className="header-role-badge">
+          <span className="role-dot" />
+          {ROLE_LABELS[user?.role] || user?.role || 'User'}
+        </span>
+
+        <button className="header-icon-btn" title="Thông báo">
           <Bell size={16} />
           <span className="notif-badge">3</span>
         </button>
