@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, LogIn, ChevronRight } from 'lucide-react';
+import { Eye, EyeOff, LogIn, ShieldCheck, Sparkles, Workflow } from 'lucide-react';
 import { authStore } from '../../store/authStore.js';
 import { toast } from '../../shared/toast/useToast.js';
-import { ROLE_LABELS, ROLE_COLORS } from '../../utils/roleUtils.js';
-
+import './login.css';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -18,91 +17,64 @@ export default function LoginPage() {
     e.preventDefault();
     const ok = await login(email, password);
     if (ok) {
-        navigate('/dashboard');
+      navigate('/dashboard');
+    } else {
+      toast.error('Đăng nhập thất bại');
     }
-    else { 
-        toast.error(ok.message || 'Đăng nhập thất bại');
-    }
-  
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'var(--bg-primary)',
-      display: 'flex',
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
-      {/* Background decoration */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
-        backgroundSize: '50px 50px',
-      }} />
-      <div style={{
-        position: 'absolute',
-        width: 600, height: 600,
-        background: 'radial-gradient(circle, rgba(245,158,11,0.12) 0%, transparent 70%)',
-        top: -200, left: -100,
-        pointerEvents: 'none',
-      }} />
-      <div style={{
-        position: 'absolute',
-        width: 400, height: 400,
-        background: 'radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)',
-        bottom: -100, right: 100,
-        pointerEvents: 'none',
-      }} />
+    <div className="login-page">
+      <div className="login-orb login-orb-left" />
+      <div className="login-orb login-orb-right" />
 
-      {/* Left panel */}
-      <div style={{
-        flex: 1, display: 'flex', flexDirection: 'column',
-        justifyContent: 'center', padding: '60px 80px',
-        position: 'relative',
-        borderRight: '1px solid var(--border)',
-      }}>
-        {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 56 }}>
-          <div style={{
-            width: 48, height: 48,
-            background: 'var(--accent)',
-            borderRadius: 14,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 20, color: '#000',
-            boxShadow: '0 0 30px rgba(245,158,11,0.5)',
-          }}>QH</div>
-          <div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 800, color: 'var(--text-primary)' }}>
-              Quản Lý Hệ Thống
+      <section className="login-brand-panel">
+        <div className="login-brand-card">
+          <div className="login-logo-row">
+            <div className="login-logo-mark">BK</div>
+            <div>
+              <div className="login-logo-title">BoKin Business</div>
+              <div className="login-logo-subtitle">ENTERPRISE MANAGEMENT v2.0</div>
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-display)', letterSpacing: 1 }}>
-              ENTERPRISE MANAGEMENT v2.0
+          </div>
+
+          <div className="login-hero-copy">
+            <span className="login-eyebrow">
+              <Sparkles size={14} />
+              Quản trị hiện đại
+            </span>
+            <h1>Đăng nhập hệ thống quản lý</h1>
+            <p>
+              Theo dõi yêu cầu, phân công công việc và vận hành kinh doanh trên một giao diện thống nhất.
+            </p>
+          </div>
+
+          <div className="login-feature-grid">
+            <div className="login-feature-item">
+              <ShieldCheck size={18} />
+              <span>Bảo mật tài khoản</span>
+            </div>
+            <div className="login-feature-item">
+              <Workflow size={18} />
+              <span>Quy trình liền mạch</span>
             </div>
           </div>
         </div>
+      </section>
 
-        <div style={{ animation: 'fadeInUp 0.5s ease' }}>
-          <h1 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 40,
-            fontWeight: 800,
-            color: 'var(--text-primary)',
-            lineHeight: 1.1,
-            marginBottom: 12,
-          }}>
-            Đăng nhập<br />
-          </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: 14, marginBottom: 40 }}>
-            Hệ thống quản lý sản xuất & kinh doanh tích hợp
-          </p>
+      <section className="login-form-panel">
+        <div className="login-form-card">
+          <div className="login-form-header">
+            <span className="login-form-kicker">Chào mừng trở lại</span>
+            <h2>Đăng nhập</h2>
+            <p>Nhập email và mật khẩu để tiếp tục vào trang quản trị.</p>
+          </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
               <label className="form-label">Email</label>
               <input
-                className="form-input"
+                className="form-input login-input"
                 type="email"
                 placeholder="email@company.com"
                 value={email}
@@ -113,26 +85,20 @@ export default function LoginPage() {
 
             <div className="form-group">
               <label className="form-label">Mật khẩu</label>
-              <div style={{ position: 'relative' }}>
+              <div className="login-password-wrap">
                 <input
-                  className="form-input"
+                  className="form-input login-input"
                   type={showPw ? 'text' : 'password'}
                   placeholder="••••••••"
                   value={password}
                   onChange={e => { setPassword(e.target.value); clearError(); }}
-                  style={{ paddingRight: 44 }}
                   required
                 />
                 <button
                   type="button"
+                  className="login-password-toggle"
                   onClick={() => setShowPw(!showPw)}
-                  style={{
-                    position: 'absolute', right: 12, top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none', border: 'none',
-                    color: 'var(--text-muted)', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center',
-                  }}
+                  aria-label={showPw ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
                 >
                   {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -140,26 +106,19 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div style={{
-                background: 'var(--danger-dim)',
-                border: '1px solid rgba(239,68,68,0.3)',
-                borderRadius: 8, padding: '10px 14px',
-                fontSize: 13, color: 'var(--danger)',
-                marginBottom: 16,
-              }}>
+              <div className="login-error">
                 {error}
               </div>
             )}
 
             <button
               type="submit"
-              className="btn btn-primary"
+              className="btn btn-primary login-submit"
               disabled={isLoading}
-              style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: 14, marginTop: 8 }}
             >
               {isLoading ? (
-                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ width: 16, height: 16, border: '2px solid #000', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.6s linear infinite', display: 'inline-block' }} />
+                <span className="login-loading">
+                  <span className="login-spinner" />
                   Đang đăng nhập...
                 </span>
               ) : (
@@ -171,11 +130,7 @@ export default function LoginPage() {
             </button>
           </form>
         </div>
-      </div>
-
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-      `}</style>
+      </section>
     </div>
   );
 }
