@@ -2,6 +2,8 @@ import { Bell, Search, Menu, Sparkles } from 'lucide-react';
 import { authStore } from '../../store/authStore.js';
 import { ROLE_LABELS } from '../../utils/roleUtils.js';
 import '../../css/header.css';
+import { useLocation } from "react-router-dom";
+
 
 const PAGE_TITLES = {
   '/dashboard':        ['Tổng Quan',       'Dashboard'],
@@ -16,7 +18,8 @@ const PAGE_TITLES = {
 
 export default function Header({ onMenuToggle }) {
   const { user } = authStore();
-  const path = window.location.pathname;
+    const location = useLocation();
+  const path = location.pathname;
   const [currentPage, parentPage] = PAGE_TITLES[path] || ['Trang Chủ', ''];
 
   const today = new Date().toLocaleDateString('vi-VN', {
