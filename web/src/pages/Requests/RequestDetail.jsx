@@ -376,8 +376,8 @@ export default function RequestDetail({ selected, onClose }) {
   // ── Permissions ───────────────────────────────────────────
   const isCreator        = request.createdById === user?.id || request.created_by_id === user?.id;
   const isTruongPhongKD  = user?.role === ROLES.TRUONG_PHONG;
-  const isTruongPhong    = user?.role === ROLES.TRUONG_PHONG;
-  const isTruongPhongGan    = user?.role === ROLES.TRUONG_PHONG && user?.department_id === request.to_department;
+  const isTruongPhong    = user?.role === ROLES.TRUONG_PHONG || user?.role === ROLES.SUPER_ADMIN;
+  const isTruongPhongGan    = (user?.role === ROLES.TRUONG_PHONG || user?.role === ROLES.SUPER_ADMIN) && user?.department_id === request.to_department;
 
   const isAssigned       = request.assigned_to === user?.id;
 
@@ -729,7 +729,7 @@ export default function RequestDetail({ selected, onClose }) {
                 {hasFiles ? (
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     {request.files.map(f => {
-                        const isImage = f.type === 'image' || f.mimeType?.startsWith('image/');
+                        const isImage = f.file_type === 'image' || f.mime_type?.startsWith('image/');
 
                         return (
                           <div key={f.id} onClick={() => {
