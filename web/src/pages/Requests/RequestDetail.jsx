@@ -729,7 +729,7 @@ export default function RequestDetail({ selected, onClose }) {
                 {hasFiles ? (
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     {request.files.map(f => {
-                        const isImage = f.file_type === 'image' || f.mime_type?.startsWith('image/');
+                        const isImage = (f.file_type === 'image' || f.mime_type?.startsWith('image/')) && f.category !== 'output';
 
                         return (
                           <div key={f.id} onClick={() => {
@@ -862,7 +862,25 @@ export default function RequestDetail({ selected, onClose }) {
                     />
                     {outputFiles.length > 0 ? (
                       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                        {outputFiles.map(f => <FilePreview key={f.id} file={f} />)}
+
+                        {outputFiles.map(f => { const isImage = (f.file_type === 'image' || f.mime_type?.startsWith('image/')) && f.category == 'output';
+
+                        return (
+                          <div key={f.id} onClick={() => {
+                            if (isImage) {
+                              setPreviewFile(f);
+                            }
+                          }}>
+                            {isImage ? (
+                              <img
+                                src={f.url}
+                                style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 8 }}
+                              />
+                            ) : (
+                              <FilePreview file={f} />
+                            )}
+                          </div>
+                        );})}
                       </div>
                     ) : (
                       <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)' }}>
