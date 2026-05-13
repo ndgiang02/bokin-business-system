@@ -729,7 +729,7 @@ export default function RequestDetail({ selected, onClose }) {
                 {hasFiles ? (
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     {request.files.map(f => {
-                        const isImage = (f.file_type === 'image' || f.mime_type?.startsWith('image/')) && f.category !== 'output';
+                        const isImage = (f.file_type === 'image' || f.mime_type?.startsWith('image/')) && f.category == 'input';
 
                         return (
                           <div key={f.id} onClick={() => {
@@ -863,7 +863,8 @@ export default function RequestDetail({ selected, onClose }) {
                     {outputFiles.length > 0 ? (
                       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
 
-                        {outputFiles.map(f => { const isImage = (f.file_type === 'image' || f.mime_type?.startsWith('image/')) && f.category == 'output';
+                        {outputFiles.map(f => { 
+                          const isImage = (f.file_type === 'image' || f.mime_type?.startsWith('image/')) && f.category == 'output';
 
                         return (
                           <div key={f.id} onClick={() => {
