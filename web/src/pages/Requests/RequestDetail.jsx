@@ -729,7 +729,7 @@ export default function RequestDetail({ selected, onClose }) {
                 {hasFiles ? (
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     {request.files.map(f => {
-                        const isImage = (f.file_type === 'image' || f.mime_type?.startsWith('image/')) && f.category == 'input';
+                        const isImage = (f.file_type === 'image' || f.mime_type?.startsWith('image/'));
 
                         return (
                           <div key={f.id} onClick={() => {
