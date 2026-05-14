@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FilePlus, Search, Eye, Trash2, RefreshCw, SlidersHorizontal } from 'lucide-react';
+import { FilePlus, Search, Eye, Trash2, RefreshCw, SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 import CreateRequestModal from './CreateRequestModal.jsx';
 import { authStore } from '../../store/authStore.js';
 import { userStore } from '../../store/userStore.js';
@@ -22,6 +22,8 @@ const PRIORITY_MAP = {
   low:    { label: 'Thấp',       class: 'badge-low' },
 };
 
+const PAGE_SIZE = 20;
+
 export default function RequestList() {
   const [requests, setRequests]   = useState([]);
   const [filtered, setFiltered]   = useState([]);
@@ -34,6 +36,13 @@ export default function RequestList() {
   const [selected, setSelected]   = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [users, setUsers]         = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: PAGE_SIZE,
+    totalPages: 1,
+  });
 
   const { user }          = authStore();
   const { getAllRequets }  = requestStore();
@@ -53,13 +62,20 @@ export default function RequestList() {
       department: user?.role === ROLES.SUPER_ADMIN ? undefined : user?.department_id,
       user_id: user?.role === ROLES.NHAN_VIEN ? user?.id : undefined,    
     };
-    const pagination = { page: 1, limit: 20 };
+    const requestPagination = { page: currentPage, limit: PAGE_SIZE };
 
     setLoading(true);
-    getAllRequets(filters, pagination)
+    getAllRequets(filters, requestPagination)
       .then(res => {
-        const data = res?.data?.data?.items || [];
+        const responseData = res?.data?.data || {};
+        const data = responseData.items || [];
         setRequests(data);
+        setPagination({
+          total: responseData.total || 0,
+          page: responseData.page || currentPage,
+          limit: responseData.limit || PAGE_SIZE,
+          totalPages: Math.max(responseData.totalPages || 1, 1),
+        });
       })
       .finally(() => setLoading(false));
   };
@@ -70,7 +86,14 @@ export default function RequestList() {
 
   useEffect(() => {
     fetchRequests();
-  }, [search, statusFilter, priorityFilter]);
+  }, [search, statusFilter, priorityFilter, currentPage]);
+
+  const paginationPages = useMemo(() => {
+    const totalPages = pagination.totalPages || 1;
+    const end = Math.min(totalPages, Math.max(5, currentPage + 2));
+    const start = Math.max(1, end - 4);
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  }, [currentPage, pagination.totalPages]);
 
   const userMap = useMemo(
     () => Object.fromEntries(users?.map(u => [u.id, u.name])),
@@ -120,7 +143,7 @@ export default function RequestList() {
         {statCards.map(s => (
           <div
             key={s.key}
-            onClick={() => setStatus(statusFilter === s.key ? 'all' : s.key)}
+            onClick={() => { setCurrentPage(1); setStatus(statusFilter === s.key ? 'all' : s.key); }}
             style={{
               background: statusFilter === s.key ? `${s.color}18` : 'var(--bg-card)',
               border: `1px solid ${statusFilter === s.key ? s.color + '60' : 'var(--border)'}`,
@@ -148,7 +171,7 @@ export default function RequestList() {
             style={{ paddingLeft: 36 }}
             placeholder="Tìm mã Yêu cầu"
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={e => { setCurrentPage(1); setSearch(e.target.value); }}
           />
         </div>
         <button
@@ -166,7 +189,7 @@ export default function RequestList() {
           <option value="deadline">Deadline gần nhất</option>
         </select>
         {(search || statusFilter !== 'all' || priorityFilter !== 'all') && (
-          <button className="btn btn-outline" onClick={() => { setSearch(''); setStatus('all'); setPriority('all'); }}>
+          <button className="btn btn-outline" onClick={() => { setCurrentPage(1); setSearch(''); setStatus('all'); setPriority('all'); }}>
             <RefreshCw size={13} /> Reset
           </button>
         )}
@@ -183,7 +206,7 @@ export default function RequestList() {
             <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>Trạng thái</div>
             <div style={{ display: 'flex', gap: 6 }}>
               {['all', 'pending', 'processing', 'done', 'cancelled'].map(s => (
-                <button key={s} onClick={() => setStatus(s)} style={{
+                <button key={s} onClick={() => { setCurrentPage(1); setStatus(s); }} style={{
                   fontFamily: 'var(--font-display)',
                   padding: '4px 12px', borderRadius: 6, border: '1px solid',
                   fontSize: 11, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
@@ -200,7 +223,7 @@ export default function RequestList() {
             <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>Ưu tiên</div>
             <div style={{ display: 'flex', gap: 6 }}>
               {['all', 'high', 'medium', 'low'].map(p => (
-                <button key={p} onClick={() => setPriority(p)} style={{
+                <button key={p} onClick={() => { setCurrentPage(1); setPriority(p); }} style={{
                   fontFamily: 'var(--font-display)',
                   padding: '4px 12px', borderRadius: 6, border: '1px solid',
                   fontSize: 11, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
@@ -220,7 +243,7 @@ export default function RequestList() {
       <div className="card" style={{ padding: 0 }}>
         <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-            Hiển thị <strong style={{ color: 'var(--text-primary)' }}>{filtered.length}</strong> yêu cầu
+            Hiển thị <strong style={{ color: 'var(--text-primary)' }}>{filtered.length}</strong> / {pagination.total} yêu cầu
           </span>
         </div>
 
@@ -296,6 +319,45 @@ export default function RequestList() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {pagination.totalPages > 1 && (
+          <div style={{
+            padding: '14px 20px', borderTop: '1px solid var(--border)',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            gap: 12, flexWrap: 'wrap',
+          }}>
+            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+              Trang <strong style={{ color: 'var(--text-primary)' }}>{pagination.page}</strong> / {pagination.totalPages}
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button
+                className="btn btn-outline btn-sm"
+                disabled={currentPage <= 1 || loading}
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              >
+                <ChevronLeft size={14} /> Trước
+              </button>
+              {paginationPages.map(page => (
+                <button
+                  key={page}
+                  className={`btn btn-sm ${page === currentPage ? 'btn-primary' : 'btn-outline'}`}
+                  disabled={loading}
+                  onClick={() => setCurrentPage(page)}
+                  style={{ minWidth: 34, justifyContent: 'center' }}
+                >
+                  {page}
+                </button>
+              ))}
+              <button
+                className="btn btn-outline btn-sm"
+                disabled={currentPage >= pagination.totalPages || loading}
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, pagination.totalPages))}
+              >
+                Sau <ChevronRight size={14} />
+              </button>
+            </div>
           </div>
         )}
       </div>
