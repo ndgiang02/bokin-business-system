@@ -1,112 +1,177 @@
-/* header.css — Light theme */
+/* header.css — modern glass header */
 .header {
   height: var(--header-height);
   background: var(--bg-header);
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center;
-  padding: 0 24px 0 20px; gap: 16px;
-  backdrop-filter: blur(12px);
-  position: sticky; top: 0; z-index: 50;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.72);
+  display: flex;
+  align-items: center;
+  padding: 0 26px;
+  gap: 18px;
+  backdrop-filter: blur(20px) saturate(1.35);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 10px 28px rgba(15,23,42,0.06);
 }
 
-.header-breadcrumb { display: flex; align-items: center; gap: 8px; flex: 1; }
-.breadcrumb-item { font-size: 13px; color: var(--text-muted); }
-.breadcrumb-sep   { color: var(--text-muted); font-size: 12px; }
+.header-title-block {
+  min-width: 0;
+  flex: 1;
+}
+
+.header-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.breadcrumb-item {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.breadcrumb-sep { color: var(--text-muted); font-size: 12px; }
 .breadcrumb-current {
-  font-size: 14px; font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   color: var(--text-primary);
   font-family: var(--font-display);
+  letter-spacing: -0.35px;
 }
 
-.header-actions { display: flex; align-items: center; gap: 8px; }
+.header-greeting {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+}
+.header-greeting svg { color: var(--accent); }
 
-.header-icon-btn {
-  width: 36px; height: 36px;
-  background: var(--bg-input);
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-search,
+.header-icon-btn,
+.header-hamburger {
   border: 1px solid var(--border);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: var(--text-secondary); transition: var(--transition);
+  background: rgba(255,255,255,0.72);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.header-search {
+  height: 40px;
+  min-width: 220px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 16px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.header-icon-btn,
+.header-hamburger {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
 }
-.header-icon-btn:hover {
-  background: var(--bg-card);
-  color: var(--text-primary);
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-dim);
+
+.header-search:hover,
+.header-icon-btn:hover,
+.header-hamburger:hover {
+  background: #fff;
+  color: var(--accent);
+  border-color: rgba(37,99,235,0.28);
+  box-shadow: 0 0 0 4px var(--accent-dim), var(--shadow-sm);
 }
 
 .notif-badge {
-  position: absolute; top: -4px; right: -4px;
-  width: 16px; height: 16px;
-  background: var(--danger); border-radius: 50%;
-  font-size: 9px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  color: white; border: 2px solid var(--bg-card);
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  border: 2px solid #fff;
   font-family: var(--font-mono);
 }
 
 .header-date {
-  font-size: 12px; color: var(--text-muted);
+  font-size: 12px;
+  color: var(--text-secondary);
   font-family: var(--font-mono);
-  padding: 0 12px; border-right: 1px solid var(--border);
+  font-weight: 600;
+  padding: 9px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.62);
+  border: 1px solid var(--border);
 }
 
 .header-role-badge {
-  display: flex; align-items: center; gap: 6px;
-  padding: 5px 12px;
-  background: var(--accent-dim);
-  border: 1px solid rgba(37,99,235,0.2);
-  border-radius: 20px;
-  font-size: 11px; font-weight: 600; color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 13px;
+  background: linear-gradient(135deg, rgba(37,99,235,0.12), rgba(6,182,212,0.12));
+  border: 1px solid rgba(37,99,235,0.18);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent);
   font-family: var(--font-mono);
-  text-transform: uppercase; letter-spacing: 0.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 .role-dot {
-  width: 6px; height: 6px;
-  background: var(--accent); border-radius: 50%;
-  box-shadow: 0 0 4px var(--accent);
+  width: 7px;
+  height: 7px;
+  background: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(16,185,129,0.9);
 }
 
-.header-hamburger {
-  display: none;
-  width: 36px; height: 36px;
-  background: var(--bg-input);
-  border: 1px solid var(--border); border-radius: 8px;
-  align-items: center; justify-content: center;
-  cursor: pointer; color: var(--text-secondary); transition: var(--transition);
-  flex-shrink: 0;
-}
-.header-hamburger:hover { background: var(--bg-card); color: var(--text-primary); border-color: var(--accent); }
+.header-hamburger { display: none; flex-shrink: 0; }
 
+@media (max-width: 1100px) {
+  .header-search { min-width: auto; width: 42px; padding: 0; justify-content: center; }
+  .header-search span { display: none; }
+}
 
 @media (max-width: 768px) {
-  .header {
-    padding: 0 16px;
-    gap: 10px;
-  }
-
-  .header-hamburger {
-    display: flex;
-  }
-
-  .header-date {
-    display: none;
-  }
-
-  .header-role-badge {
-    display: none;
-  }
+  .header { padding: 0 16px; gap: 12px; }
+  .header-hamburger { display: flex; }
+  .header-date,
+  .header-role-badge,
+  .header-greeting { display: none; }
+  .breadcrumb-current { font-size: 16px; }
 }
 
 @media (max-width: 480px) {
-  .header {
-    padding: 0 12px;
-    gap: 8px;
-  }
-
-  .breadcrumb-current {
-    font-size: 13px;
-  }
+  .header { padding: 0 12px; gap: 8px; }
+  .breadcrumb-item,
+  .breadcrumb-sep { display: none; }
+  .header-search { display: none; }
 }

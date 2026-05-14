@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, FileText, FilePlus, CheckSquare, Kanban,
-  Users, UserPlus, BarChart3, Settings, LogOut, ChevronLeft,
+  Users, UserPlus, BarChart3, Settings, LogOut, CalendarDays, ChevronLeft,
   ChevronRight, X
 } from 'lucide-react';
 import { authStore } from '../../store/authStore.js';
@@ -11,7 +11,7 @@ import '../../css/sidebar.css';
 
 const ICONS = {
   LayoutDashboard, FileText, FilePlus, CheckSquare, Kanban,
-  Users, UserPlus, BarChart3, Settings, LogOut
+  Users, UserPlus, BarChart3, Settings, LogOut, CalendarDays
 };
 
 export default function Sidebar({ mobileOpen, onMobileClose }) {
@@ -48,29 +48,36 @@ export default function Sidebar({ mobileOpen, onMobileClose }) {
 
       <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
         <div className="sidebar-logo">
+          <div className="logo-mark">BK</div>
           <div className="logo-text">
             <div className="logo-name">BoKin</div>
+            <div className="logo-sub">Business Suite</div>
           </div>
+
           <button
+            className="sidebar-mobile-close"
+            type="button"
             onClick={onMobileClose}
-            style={{
-              marginLeft: 'auto', background: 'none', border: 'none',
-              color: 'var(--text-muted)', cursor: 'pointer',
-              display: 'flex', alignItems: 'center',
-              padding: 4, borderRadius: 6, flexShrink: 0,
-            }}
+            aria-label="Đóng menu"
           >
-          <div className="sidebar-toggle" onClick={() => setCollapsed(!collapsed)}>
-            {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-          </div>
+            <X size={16} />
           </button>
         </div>
 
+        <button
+          className="sidebar-toggle"
+          type="button"
+          onClick={() => setCollapsed(!collapsed)}
+          aria-label={collapsed ? 'Mở rộng menu' : 'Thu gọn menu'}
+        >
+          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+        </button>
+
         <div className="sidebar-user">
-          <div className="user-avatar">{user?.avatar || 'U'}</div>
+          <div className="user-avatar">{user?.avatar || user?.name?.charAt(0) || 'U'}</div>
           <div className="user-info">
-            <div className="user-name">{user?.name}</div>
-            <div className="user-role">{ROLE_LABELS[user?.role] || user?.role}</div>
+            <div className="user-name">{user?.name || 'Người dùng'}</div>
+            <div className="user-role">{ROLE_LABELS[user?.role] || user?.role || 'Tài khoản'}</div>
           </div>
           <div className="user-dot" />
         </div>
@@ -96,7 +103,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }) {
             const realName = ['Kinh Doanh', 'Quản Lý', 'Sản Xuất', 'Phân Tích', 'Hệ Thống'][idx];
             if (!groups[realName]) return null;
             return (
-              <div key={realName} className="nav-group">
+              <div key={groupName} className="nav-group">
                 <div className="nav-group-label">{realName}</div>
                 {groups[realName].map(item => {
                   const Icon = ICONS[item.icon];
@@ -119,12 +126,11 @@ export default function Sidebar({ mobileOpen, onMobileClose }) {
         </nav>
 
         <div className="sidebar-footer">
-          <button className="logout-btn" onClick={handleLogout} title={collapsed ? 'Dang xuat' : ''}>
+          <button className="logout-btn" onClick={handleLogout} title={collapsed ? 'Đăng xuất' : ''}>
             <LogOut size={18} />
             <span className="nav-label">Đăng Xuất</span>
           </button>
         </div>
-
       </aside>
     </>
   );

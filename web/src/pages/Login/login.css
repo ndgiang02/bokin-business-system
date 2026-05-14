@@ -1,0 +1,533 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
+
+/* ─── Tokens ──────────────────────────────────────────── */
+:root {
+  --lp-bg:        #080C14;
+  --lp-surface:   #0E1420;
+  --lp-card:      #111827;
+  --lp-border:    rgba(255,255,255,0.07);
+  --lp-border-hi: rgba(255,255,255,0.12);
+  --lp-gold:      #057dde;
+  --lp-gold-2:    #3c7bf2;
+  --lp-gold-glow: rgba(5,125,222,0.18);
+  --lp-text:      #F1F5F9;
+  --lp-muted:     #64748B;
+  --lp-subtle:    #94A3B8;
+  --lp-danger:    #F87171;
+  --lp-danger-bg: rgba(248,113,113,0.09);
+  --lp-font-disp: 'Sora', sans-serif;
+  --lp-font-body: 'DM Sans', sans-serif;
+  --lp-ease:      cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ─── Root layout ─────────────────────────────────────── */
+.lp-root {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr minmax(460px, 520px);
+  background: var(--lp-bg);
+  font-family: var(--lp-font-body);
+  color: var(--lp-text);
+}
+
+/* ─── Brand panel ─────────────────────────────────────── */
+.lp-brand {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 60px;
+  overflow: hidden;
+  border-right: 1px solid var(--lp-border);
+}
+
+/* Ambient glow */
+.lp-brand-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 50% at 30% 20%, rgba(240,168,69,0.10) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 75% 80%, rgba(99,102,241,0.08) 0%, transparent 60%);
+}
+
+/* Subtle dot grid */
+.lp-brand-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+}
+
+/* Decorative arc */
+.lp-arc {
+  position: absolute;
+  width: 560px;
+  height: 560px;
+  border-radius: 50%;
+  border: 1px solid rgba(240,168,69,0.12);
+  bottom: -200px;
+  right: -180px;
+  pointer-events: none;
+}
+.lp-arc::after {
+  content: '';
+  position: absolute;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  border: 1px solid rgba(240,168,69,0.07);
+  top: 90px;
+  left: 90px;
+}
+
+/* Logo */
+.lp-logo {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.lp-logo-mark {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--lp-font-disp);
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--lp-bg);
+  background: linear-gradient(135deg, var(--lp-gold), var(--lp-gold-2));
+  box-shadow: 0 0 28px rgba(240,168,69,0.30);
+  flex-shrink: 0;
+}
+
+.lp-logo-name {
+  font-family: var(--lp-font-disp);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--lp-text);
+  letter-spacing: -0.2px;
+}
+
+.lp-logo-tag {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 1.6px;
+  color: var(--lp-muted);
+  margin-top: 2px;
+}
+
+/* Hero copy */
+.lp-hero {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 0 40px;
+}
+
+.lp-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(240,168,69,0.24);
+  background: rgba(240,168,69,0.08);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--lp-gold);
+  margin-bottom: 28px;
+  width: fit-content;
+}
+
+.lp-hero-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lp-gold);
+  animation: lpPulse 2s ease infinite;
+  flex-shrink: 0;
+}
+
+@keyframes lpPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.75); }
+}
+
+.lp-hero-title {
+  font-family: var(--lp-font-disp);
+  font-size: clamp(42px, 5.5vw, 66px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -2.5px;
+  color: var(--lp-text);
+  margin-bottom: 22px;
+}
+
+.lp-hero-accent {
+  background: linear-gradient(90deg, var(--lp-gold), var(--lp-gold-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.lp-hero-sub {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--lp-subtle);
+  max-width: 420px;
+}
+
+/* Feature list */
+.lp-features {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lp-feat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--lp-border);
+  background: rgba(255,255,255,0.025);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.lp-feat:hover {
+  border-color: var(--lp-border-hi);
+  background: rgba(255,255,255,0.04);
+}
+
+.lp-feat-icon {
+  color: var(--lp-gold);
+  flex-shrink: 0;
+}
+
+.lp-feat-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--lp-text);
+  line-height: 1.2;
+}
+
+.lp-feat-sub {
+  font-size: 11.5px;
+  color: var(--lp-muted);
+  margin-top: 2px;
+}
+
+/* ─── Form panel ──────────────────────────────────────── */
+.lp-form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 40px;
+  background: var(--lp-surface);
+}
+
+.lp-form-card {
+  width: min(400px, 100%);
+  animation: lpSlideUp 0.5s var(--lp-ease) both;
+}
+
+@keyframes lpSlideUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.lp-form-top {
+  margin-bottom: 32px;
+}
+
+.lp-form-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--lp-gold);
+  margin-bottom: 10px;
+}
+
+.lp-form-title {
+  font-family: var(--lp-font-disp);
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--lp-text);
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+
+.lp-form-desc {
+  font-size: 14px;
+  color: var(--lp-subtle);
+  font-weight: 400;
+}
+
+/* Form */
+.lp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.lp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.lp-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lp-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--lp-subtle);
+  letter-spacing: 0.2px;
+}
+
+.lp-input {
+  height: 48px;
+  width: 100%;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid var(--lp-border-hi);
+  background: rgba(255,255,255,0.04);
+  color: var(--lp-text);
+  font-family: var(--lp-font-body);
+  font-size: 14px;
+  font-weight: 400;
+  outline: none;
+  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+  box-sizing: border-box;
+}
+
+.lp-input::placeholder {
+  color: var(--lp-muted);
+}
+
+.lp-input:hover {
+  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.06);
+}
+
+.lp-input:focus {
+  border-color: var(--lp-gold);
+  background: rgba(240,168,69,0.04);
+  box-shadow: 0 0 0 3px rgba(240,168,69,0.12);
+}
+
+/* Password */
+.lp-pw-wrap {
+  position: relative;
+}
+
+.lp-pw-wrap .lp-input {
+  padding-right: 48px;
+}
+
+.lp-pw-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--lp-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s;
+}
+
+.lp-pw-toggle:hover {
+  color: var(--lp-gold);
+  background: rgba(240,168,69,0.1);
+}
+
+/* Error */
+.lp-error {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(248,113,113,0.2);
+  background: var(--lp-danger-bg);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--lp-danger);
+}
+
+.lp-error-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lp-danger);
+  flex-shrink: 0;
+}
+
+/* Submit */
+.lp-submit {
+  height: 50px;
+  border: none;
+  border-radius: 13px;
+  background: linear-gradient(135deg, var(--lp-gold), var(--lp-gold-2));
+  color: #1A0E00;
+  font-family: var(--lp-font-body);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 8px 24px rgba(240,168,69,0.22);
+  width: 100%;
+  margin-top: 4px;
+}
+
+.lp-submit:not(:disabled):hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(240,168,69,0.30);
+}
+
+.lp-submit:not(:disabled):active {
+  transform: translateY(0);
+  box-shadow: 0 4px 16px rgba(240,168,69,0.20);
+}
+
+.lp-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.lp-submit-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.lp-arrow {
+  transition: transform 0.2s var(--lp-ease);
+}
+
+.lp-submit:not(:disabled):hover .lp-arrow {
+  transform: translateX(3px);
+}
+
+.lp-spinner-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+}
+
+.lp-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(26,14,0,0.3);
+  border-top-color: rgba(26,14,0,0.9);
+  border-radius: 50%;
+  animation: lpSpin 0.65s linear infinite;
+  display: inline-block;
+}
+
+@keyframes lpSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Footer note */
+.lp-footer-note {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--lp-muted);
+}
+
+/* ─── Responsive ──────────────────────────────────────── */
+@media (max-width: 960px) {
+  .lp-root {
+    grid-template-columns: 1fr;
+  }
+
+  .lp-brand {
+    padding: 36px 32px 28px;
+    border-right: none;
+    border-bottom: 1px solid var(--lp-border);
+  }
+
+  .lp-hero {
+    padding: 36px 0 24px;
+  }
+
+  .lp-hero-title {
+    font-size: 44px;
+  }
+
+  .lp-features {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .lp-feat {
+    flex: 1 1 160px;
+  }
+
+  .lp-arc {
+    display: none;
+  }
+
+  .lp-form-panel {
+    padding: 40px 32px;
+    background: var(--lp-bg);
+  }
+}
+
+@media (max-width: 600px) {
+  .lp-brand {
+    display: none;
+  }
+
+  .lp-root {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    min-height: 100vh;
+  }
+
+  .lp-form-panel {
+    width: 100%;
+    padding: 0;
+    background: transparent;
+  }
+
+  .lp-form-card {
+    width: 100%;
+  }
+}

@@ -40,6 +40,9 @@ export const PERMISSIONS = {
   view_tasks: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG, ROLES.NHAN_VIEN],
   manage_tasks: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG],
 
+  // Lịch làm việc (Schedule)
+  view_schedule: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG, ROLES.NHAN_VIEN],
+
   // Thành viên (Members)
   view_members: [ROLES.SUPER_ADMIN, ROLES.TRUONG_PHONG],
   manage_members: [ROLES.SUPER_ADMIN],
@@ -81,6 +84,14 @@ export const getMenuItems = (role) => {
       group: 'Kinh Doanh',
     },
 
+    {
+      key: 'schedule',
+      label: 'Lịch Làm Việc',
+      icon: 'CalendarDays',
+      path: '/schedule',
+      permission: 'view_schedule',
+      group: 'Quản Lý',
+    },
     {
       key: 'department',
       label: 'Phòng Ban',

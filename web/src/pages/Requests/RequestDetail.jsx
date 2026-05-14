@@ -375,9 +375,9 @@ export default function RequestDetail({ selected, onClose }) {
 
   // ── Permissions ───────────────────────────────────────────
   const isCreator        = request.createdById === user?.id || request.created_by_id === user?.id;
-  const isTruongPhongKD  = user?.role === ROLES.TRUONG_PHONG;
-  const isTruongPhong    = user?.role === ROLES.TRUONG_PHONG;
-  const isTruongPhongGan    = user?.role === ROLES.TRUONG_PHONG && user?.department_id === request.to_department;
+  const isTruongPhongKD  = user?.role === ROLES.TRUONG_PHONG || user?.role === ROLES.SUPER_ADMIN;
+  const isTruongPhong    = user?.role === ROLES.TRUONG_PHONG || user?.role === ROLES.SUPER_ADMIN;
+  const isTruongPhongGan    = (user?.role === ROLES.TRUONG_PHONG && user?.department_id === request.to_department) || user?.role === ROLES.SUPER_ADMIN;
 
   const isAssigned       = request.assigned_to === user?.id;
 
@@ -729,7 +729,7 @@ export default function RequestDetail({ selected, onClose }) {
                 {hasFiles ? (
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     {request.files.map(f => {
-                        const isImage = f.type === 'image' || f.mimeType?.startsWith('image/');
+                        const isImage = (f.file_type === 'image' || f.mime_type?.startsWith('image/'));
 
                         return (
                           <div key={f.id} onClick={() => {
@@ -862,7 +862,26 @@ export default function RequestDetail({ selected, onClose }) {
                     />
                     {outputFiles.length > 0 ? (
                       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                        {outputFiles.map(f => <FilePreview key={f.id} file={f} />)}
+
+                        {outputFiles.map(f => { 
+                          const isImage = (f.file_type === 'image' || f.mime_type?.startsWith('image/')) && f.category == 'output';
+
+                        return (
+                          <div key={f.id} onClick={() => {
+                            if (isImage) {
+                              setPreviewFile(f);
+                            }
+                          }}>
+                            {isImage ? (
+                              <img
+                                src={f.url}
+                                style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 8 }}
+                              />
+                            ) : (
+                              <FilePreview file={f} />
+                            )}
+                          </div>
+                        );})}
                       </div>
                     ) : (
                       <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)' }}>

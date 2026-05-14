@@ -47,7 +47,7 @@ export function Table({ columns, data, onRowClick, emptyText = 'Không có dữ 
                   transition: 'background 0.15s',
                   animationDelay: `${i * 40}ms`,
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.025)'}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.045)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 {columns.map(col => (
@@ -82,7 +82,7 @@ export function Pagination({ page, total, pageSize, onChange }) {
             style={{
               width: 28, height: 28,
               background: page === i + 1 ? 'var(--accent)' : 'var(--bg-input)',
-              color: page === i + 1 ? '#000' : 'var(--text-secondary)',
+              color: page === i + 1 ? '#fff' : 'var(--text-secondary)',
               border: '1px solid var(--border)',
               borderRadius: 6,
               cursor: 'pointer',
