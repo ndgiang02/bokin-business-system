@@ -138,8 +138,9 @@ export async function assign(req, res, next) {
   try {
     
     const { requestId, userIds } = req.body;
+    const assignedById = req.user?.id;
 
-    const data = await requestService.assignUsers(requestId, userIds);
+    const data = await requestService.assignUsers(requestId, userIds, assignedById);
     return response.success(res, data, "Gán nhân viên thành công", 200)
   } catch (err) { next(err); }
 }

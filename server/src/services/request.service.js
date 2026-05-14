@@ -3,6 +3,7 @@ import { v4 as uuid }       from 'uuid';
 import { minioClient, BUCKET, getPublicUrl } from '../config/minio.js';
 import * as requestModel    from '../models/request.model.js';
 import { uploadMany, deleteMany } from './upload.service.js';
+import { notifyRequestAssigned } from './telegram.service.js';
 
 
 export async function createRequest(data, files = []) {
@@ -57,8 +58,24 @@ export async function createRevision(requestId, comment, createdById) {
   return requestModel.createRevision(requestId, comment, createdById);
 }
  
-export async function assignUsers(requestId, userIds) {
-  return requestModel.assignUsers(requestId, userIds);
+export async function assignUsers(requestId, userIds, assignedById) {
+  const assignedUserId = Array.isArray(userIds) ? userIds[0] : userIds;
+  const updated = await requestModel.assignUsers(Number(requestId), Number(assignedUserId));
+
+  const [assigner, assignee] = await Promise.all([
+    requestModel.getUserById(assignedById),
+    requestModel.getUserById(assignedUserId),
+  ]);
+
+  notifyRequestAssigned({
+    requestCode: updated.code,
+    assignedByName: assigner?.name || `User #${assignedById || 'không rõ'}`,
+    assignedToName: assignee?.name,
+  }).catch(err => {
+    console.error('Telegram notification error:', err.message);
+  });
+
+  return updated;
 }
  
 export async function removeAssignment(requestId, userId) {
