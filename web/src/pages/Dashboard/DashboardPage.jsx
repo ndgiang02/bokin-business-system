@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { FileText, CheckSquare, Kanban, Users, Clock, ArrowRight, AlertCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { authStore }                  from '../../store/authStore.js';
