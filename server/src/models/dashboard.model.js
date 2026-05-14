@@ -134,7 +134,7 @@ export async function getUserTaskDashBoard({ from, to } = {}) {
     }),
   ]);
 
-  const doneByUser     = Object.fromEntries(doneGroups.map(g     => [g.resolved_to, g._count.id]));
+  const doneByUser     = Object.fromEntries(doneGroups.map(g     => [g.assigned_to, g._count.id]));
   const assignedByUser = Object.fromEntries(assignedGroups.map(g => [g.assigned_to, g._count.id]));
 
   return sanXuatUsers.map(u => ({
