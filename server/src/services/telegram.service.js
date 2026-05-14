@@ -43,16 +43,22 @@ export async function sendTelegramMessage(text) {
   return res.json();
 }
 
+
 export function buildRequestAssignedMessage({ requestCode, assignedByName, assignedToName }) {
+  const url =  `http://dashboard.bokinworld.com/requests`;
+
   const lines = [
-    '📌 <b>Yêu cầu vừa được gán</b>',
-    `👤 Người gán: <b>${escapeHtml(assignedByName || 'Không rõ')}</b>`,
-    `🧾 Mã yêu cầu: <b>${escapeHtml(requestCode || 'Không rõ')}</b>`,
+    '📋 <b>YÊU CẦU VỪA ĐƯỢC PHÂN CÔNG</b>',
+    '──────────────────────────',
+    `🔖 Mã yêu cầu:   <a href="${url}">${escapeHtml(requestCode || 'Không rõ')}</a>`,
+    `👤 Người giao:   <b>${escapeHtml(assignedByName || 'Không rõ')}</b>`,
   ];
 
   if (assignedToName) {
-    lines.push(`✅ Người nhận: <b>${escapeHtml(assignedToName)}</b>`);
+    lines.push(`🙋 Người nhận:   <b>${escapeHtml(assignedToName)}</b>`);
   }
+
+  lines.push('──────────────────────────');
 
   return lines.join('\n');
 }

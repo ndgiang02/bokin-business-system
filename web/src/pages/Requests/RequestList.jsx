@@ -150,7 +150,7 @@ export default function RequestList() {
         {statCards.map(s => (
           <div
             key={s.key}
-            onClick={() => { setCurrentPage(1); setStatus(statusFilter === s.key ? 'all' : s.key); }}
+            onClick={() => { setStatus(statusFilter === s.key ? 'all' : s.key); }}
             style={{
               background: statusFilter === s.key ? `${s.color}18` : 'var(--bg-card)',
               border: `1px solid ${statusFilter === s.key ? s.color + '60' : 'var(--border)'}`,
@@ -178,7 +178,7 @@ export default function RequestList() {
             style={{ paddingLeft: 36 }}
             placeholder="Tìm mã Yêu cầu"
             value={search}
-            onChange={e => { setCurrentPage(1); setSearch(e.target.value); }}
+            onChange={e => {  setSearch(e.target.value); }}
           />
         </div>
         <button
@@ -196,7 +196,7 @@ export default function RequestList() {
           <option value="deadline">Deadline gần nhất</option>
         </select>
         {(search || statusFilter !== 'all' || priorityFilter !== 'all') && (
-          <button className="btn btn-outline" onClick={() => { setCurrentPage(1); setSearch(''); setStatus('all'); setPriority('all'); }}>
+          <button className="btn btn-outline" onClick={() => { setSearch(''); setStatus('all'); setPriority('all'); }}>
             <RefreshCw size={13} /> Reset
           </button>
         )}
@@ -213,7 +213,7 @@ export default function RequestList() {
             <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>Trạng thái</div>
             <div style={{ display: 'flex', gap: 6 }}>
               {['all', 'pending', 'processing', 'done', 'cancelled'].map(s => (
-                <button key={s} onClick={() => { setCurrentPage(1); setStatus(s); }} style={{
+                <button key={s} onClick={() => { setStatus(s); }} style={{
                   fontFamily: 'var(--font-display)',
                   padding: '4px 12px', borderRadius: 6, border: '1px solid',
                   fontSize: 11, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
@@ -230,7 +230,7 @@ export default function RequestList() {
             <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>Ưu tiên</div>
             <div style={{ display: 'flex', gap: 6 }}>
               {['all', 'high', 'medium', 'low'].map(p => (
-                <button key={p} onClick={() => { setCurrentPage(1); setPriority(p); }} style={{
+                <button key={p} onClick={() => { setPriority(p); }} style={{
                   fontFamily: 'var(--font-display)',
                   padding: '4px 12px', borderRadius: 6, border: '1px solid',
                   fontSize: 11, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
