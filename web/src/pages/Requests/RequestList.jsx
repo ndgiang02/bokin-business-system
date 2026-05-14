@@ -95,6 +95,13 @@ export default function RequestList() {
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   }, [currentPage, pagination.totalPages]);
 
+  const visibleStart = pagination.total === 0
+    ? 0
+    : (pagination.page - 1) * pagination.limit + 1;
+  const visibleEnd = pagination.total === 0
+    ? 0
+    : Math.min(visibleStart + filtered.length - 1, pagination.total);
+
   const userMap = useMemo(
     () => Object.fromEntries(users?.map(u => [u.id, u.name])),
     [users],
@@ -243,7 +250,8 @@ export default function RequestList() {
       <div className="card" style={{ padding: 0 }}>
         <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-            Hiển thị <strong style={{ color: 'var(--text-primary)' }}>{filtered.length}</strong> / {pagination.total} yêu cầu
+            Hiển thị <strong style={{ color: 'var(--text-primary)' }}>{visibleStart}-{visibleEnd}</strong> / {pagination.total} yêu cầu
+            <span style={{ marginLeft: 8 }}>(trang {pagination.page})</span>
           </span>
         </div>
 
