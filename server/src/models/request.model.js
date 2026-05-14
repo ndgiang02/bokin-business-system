@@ -327,6 +327,20 @@ export async function createRevision(requestId, comment, createdById) {
   ]);
 }
 
+
+export async function getUserById(userId) {
+  if (!userId) return null;
+
+  return prisma.user.findUnique({
+    where: { id: Number(userId) },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+    },
+  });
+}
+
 // ── Gán nhân viên SX ─────────────────────────────────────
 export async function assignUsers(requestId, userId) {
   // Upsert từng assignment

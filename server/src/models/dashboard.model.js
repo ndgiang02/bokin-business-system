@@ -117,7 +117,6 @@ export async function getUserTaskDashBoard({ from, to } = {}) {
 
   const [sanXuatUsers, doneGroups, assignedGroups] = await Promise.all([
     prisma.user.findMany({
-      where:   { department_id: 3 },
       select:  { id: true, name: true },
       orderBy: { name: 'asc' },
     }),
