@@ -122,7 +122,7 @@ export async function getUserTaskDashBoard({ from, to } = {}) {
     }),
 
     prisma.request.groupBy({
-      by:     ['resolved_to'],
+      by:     ['assigned_to'],
       where:  { status: 'done', updated_at: { gte: dateFrom, lte: dateTo } },
       _count: { id: true },
     }),

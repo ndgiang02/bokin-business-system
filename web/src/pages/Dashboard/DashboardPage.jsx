@@ -81,6 +81,9 @@ export default function DashboardPage() {
   const [fromDate, setFromDate] = useState(defaultFrom);
   const [toDate, setToDate]     = useState(defaultTo);
 
+
+  const [currentPage, setCurrentPage] = useState(1);
+
   //Store 
   const {
     stats, chart, activities, userTasks,
@@ -104,6 +107,22 @@ export default function DashboardPage() {
     const to   = dayjs(toDate).format('YYYYMMDD');
     fetchUserTask(from, to);
   }, [fromDate, toDate]);
+
+
+  const ITEMS_PER_PAGE = 10;
+
+  const totalPages = Math.ceil((userTasks?.length || 0) / ITEMS_PER_PAGE);
+
+  const paginatedTasks = userTasks?.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const paginationPages = Array.from(
+    { length: totalPages },
+    (_, i) => i + 1
+  );
+
 
   //Stat cards
   const statCards = [
@@ -256,7 +275,7 @@ export default function DashboardPage() {
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                 <thead>
                   <tr>
-                    {['#', 'Nhân Viên', 'Tổng phiếu được gia', 'Hoàn Thành', 'Tỉ Lệ'].map(h => (
+                    {['#', 'Nhân Viên', 'Tổng yêu cầu được tham gia', 'Hoàn Thành', 'Tỉ lệ'].map(h => (
                       <th key={h} style={{
                         padding: '8px 12px', textAlign: 'left',
                         fontSize: 10, fontWeight: 700,
@@ -280,7 +299,7 @@ export default function DashboardPage() {
                       Chưa có dữ liệu
                     </td></tr>
                   ) : (
-                    userTasks.map((h, i) => {
+                    paginatedTasks.map((h, i) => {
                       const pct = h.assigned > 0 ? Math.round((h.done / h.assigned) * 100) : 0;
                       return (
                         <tr key={h.user_id}
@@ -296,7 +315,7 @@ export default function DashboardPage() {
                               color: i === 0 ? '#fff' : 'var(--text-muted)',
                               fontSize: 10, fontWeight: 700,
                               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                            }}>{i + 1}</span>
+                            }}>{(currentPage - 1) * ITEMS_PER_PAGE + i + 1}</span>
                           </td>
 
                           {/* Tên */}
@@ -337,6 +356,91 @@ export default function DashboardPage() {
                   )}
                 </tbody>
               </table>
+              {totalPages > 1 && (
+              <div
+                style={{
+                  padding: '14px 20px',
+                  borderTop: '1px solid var(--border)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: 12,
+                  flexWrap: 'wrap',
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 12,
+                    color: 'var(--text-muted)',
+                  }}
+                >
+                  Trang{' '}
+                  <strong
+                    style={{
+                      color: 'var(--text-primary)',
+                    }}
+                  >
+                    {currentPage}
+                  </strong>{' '}
+                  / {totalPages}
+                </span>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                  }}
+                >
+                  <button
+                    className="btn btn-outline btn-sm"
+                    disabled={currentPage <= 1 || loading.userTask}
+                    onClick={() =>
+                      setCurrentPage((prev) =>
+                        Math.max(prev - 1, 1)
+                      )
+                    }
+                  >
+                    <ChevronLeft size={14} /> Trước
+                  </button>
+
+                  {paginationPages.map((page) => (
+                    <button
+                      key={page}
+                      className={`btn btn-sm ${
+                        page === currentPage
+                          ? 'btn-primary'
+                          : 'btn-outline'
+                      }`}
+                      disabled={loading.userTask}
+                      onClick={() => setCurrentPage(page)}
+                      style={{
+                        minWidth: 34,
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {page}
+                    </button>
+                  ))}
+
+                  <button
+                    className="btn btn-outline btn-sm"
+                    disabled={
+                      currentPage >= totalPages ||
+                      loading.userTask
+                    }
+                    onClick={() =>
+                      setCurrentPage((prev) =>
+                        Math.min(prev + 1, totalPages)
+                      )
+                    }
+                  >
+                    Sau <ChevronRight size={14} />
+                  </button>
+                </div>
+              </div>
+            )}
+
             </div>
           </div>
         {/* )}*/}

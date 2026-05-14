@@ -152,7 +152,8 @@ export async function completeRequest(req, res, next) {
   try {
 
     const requestId = parseInt(req.params.id);
-    const userId    = req.user?.id || 1;
+    const userId    = req.user?.id || null;
+
     const notes     = req.body.notes?.trim() || null;
     const files     = req.files ?? [];    
  
