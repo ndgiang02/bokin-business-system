@@ -375,9 +375,9 @@ export default function RequestDetail({ selected, onClose }) {
 
   // ── Permissions ───────────────────────────────────────────
   const isCreator        = request.createdById === user?.id || request.created_by_id === user?.id;
-  const isTruongPhongKD  = user?.role === ROLES.TRUONG_PHONG;
+  const isTruongPhongKD  = user?.role === ROLES.TRUONG_PHONG || user?.role === ROLES.SUPER_ADMIN;
   const isTruongPhong    = user?.role === ROLES.TRUONG_PHONG || user?.role === ROLES.SUPER_ADMIN;
-  const isTruongPhongGan    = (user?.role === ROLES.TRUONG_PHONG || user?.role === ROLES.SUPER_ADMIN) && user?.department_id === request.to_department;
+  const isTruongPhongGan    = (user?.role === ROLES.TRUONG_PHONG && user?.department_id === request.to_department) || user?.role === ROLES.SUPER_ADMIN;
 
   const isAssigned       = request.assigned_to === user?.id;
 
