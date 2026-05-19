@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FilePlus, Search, Eye, Trash2, RefreshCw, SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 import CreateRequestModal from './CreateRequestModal.jsx';
@@ -7,6 +7,43 @@ import { userStore } from '../../store/userStore.js';
 import { requestStore } from '../../store/requestStore.js';
 import { hasPermission, ROLES } from '../../utils/roleUtils.js';
 import RequestDetail from './RequestDetail';
+
+import { toast } from '../../shared/toast/useToast.js';
+
+const ASSIGNMENT_SOUND_COOLDOWN_MS = 4000;
+const ASSIGNMENT_POLLING_MS = 15000;
+
+function playAssignNotificationSound() {
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return;
+
+  const ctx = new AudioCtx();
+  const now = ctx.currentTime;
+  const gain = ctx.createGain();
+  gain.connect(ctx.destination);
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(0.18, now + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+
+  const osc1 = ctx.createOscillator();
+  osc1.type = 'sine';
+  osc1.frequency.setValueAtTime(880, now);
+  osc1.frequency.exponentialRampToValueAtTime(1174, now + 0.22);
+
+  const osc2 = ctx.createOscillator();
+  osc2.type = 'triangle';
+  osc2.frequency.setValueAtTime(659, now + 0.2);
+
+  osc1.connect(gain);
+  osc2.connect(gain);
+
+  osc1.start(now);
+  osc1.stop(now + 0.25);
+  osc2.start(now + 0.2);
+  osc2.stop(now + 0.45);
+
+  osc2.onended = () => ctx.close().catch(() => {});
+}
 
 const STATUS_MAP = {
   pending:    { label: 'Chờ Duyệt',    class: 'badge-pending' },
@@ -49,6 +86,8 @@ export default function RequestList() {
   const { getAllUser }     = userStore();
 
   const navigate  = useNavigate();
+  const knownAssignedRequestIdsRef = useRef(new Set());
+  const lastNotificationAtRef = useRef(0);
   const canCreate = hasPermission(user?.role, 'create_request');
   const canManageTasks = hasPermission(user?.role, 'manage_tasks');
 
@@ -87,6 +126,16 @@ export default function RequestList() {
   useEffect(() => {
     fetchRequests();
   }, [search, statusFilter, priorityFilter, currentPage]);
+
+  useEffect(() => {
+    if (user?.role !== ROLES.NHAN_VIEN) return undefined;
+
+    const intervalId = setInterval(() => {
+      fetchRequests();
+    }, ASSIGNMENT_POLLING_MS);
+
+    return () => clearInterval(intervalId);
+  }, [user?.role, search, statusFilter, priorityFilter, currentPage]);
 
   const paginationPages = useMemo(() => {
     const totalPages = pagination.totalPages || 1;
@@ -129,6 +178,36 @@ export default function RequestList() {
     setSelected(null);
     fetchRequests();
   };
+
+  useEffect(() => {
+    if (user?.role !== ROLES.NHAN_VIEN) return;
+
+    const assignedRequestIds = new Set(
+      requests
+        .filter((r) => Array.isArray(r.assignments) && r.assignments.some((a) => Number(a?.userId || a?.user?.id) === Number(user?.id)))
+        .map((r) => Number(r.id)),
+    );
+
+    if (knownAssignedRequestIdsRef.current.size === 0) {
+      knownAssignedRequestIdsRef.current = assignedRequestIds;
+      return;
+    }
+
+    const newlyAssigned = [...assignedRequestIds].filter(
+      id => !knownAssignedRequestIdsRef.current.has(id),
+    );
+
+    if (newlyAssigned.length > 0) {
+      const now = Date.now();
+      if (now - lastNotificationAtRef.current > ASSIGNMENT_SOUND_COOLDOWN_MS) {
+        playAssignNotificationSound();
+        lastNotificationAtRef.current = now;
+      }
+      toast.success(`Bạn vừa được gán ${newlyAssigned.length} yêu cầu mới`);
+    }
+
+    knownAssignedRequestIdsRef.current = assignedRequestIds;
+  }, [requests, user?.id, user?.role]);
 
   return (
     <div className="animate-fade-in">
